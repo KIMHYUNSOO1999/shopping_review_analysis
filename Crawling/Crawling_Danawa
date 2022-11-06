@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 
-url="https://smartstore.naver.com/palgongkimchi/products/5318728962?n_media=11068&n_query=%EA%B9%80%EC%B9%98&n_rank=1&n_ad_group=grp-a001-02-000000019287564&n_ad=nad-a001-02-000000119424795&n_campaign_type=2&n_mall_id=ncp_1nr0l8_01&n_mall_pid=5318728962&n_ad_group_type=2"
+url="https://prod.danawa.com/info/?pcode=10943649&keyword=%EA%B9%80%EC%B9%98&cate=1622479#bookmark_cm_opinion"
 
 options = Options()
 
@@ -29,22 +29,29 @@ driver.set_window_size(1920,1280)
  
 driver.get(url)
 
-a=driver.find_elements(By.CLASS_NAME,"_3QDEeS6NLn")
+pages=driver.find_elements(By.CLASS_NAME,"page_num")
 
-a1=[]
-b1=[]
-c1=[]
-d1=[]
-
-for i in range(0,len(a),4):
-    a1.append(a[i].text)
-for i in range(1,len(a),4):
-    b1.append(a[i].text)
-for i in range(2,len(a),4):
-    c1.append(a[i].text)
-for i in range(3,len(a),4):
-    d1.append(a[i].text)
+for i in range(len(pages)-1):
+    page_Btn=pages[i].get_attribute('id')
+    print(page_Btn)
     
-df=pd.DataFrame({'NAME':a1,'DATE':b1,'PRODUCT':c1,'TEXT':d1})
+    # driver.implicitly_wait(time_to_wait=5)
+    
+    # BTN=driver.find_element(By.ID,page_Btn)
+    # print(BTN)
+    
+    
 
-df.to_csv("./Crawling/naver.csv")
+
+
+# res=driver.find_elements(By.CLASS_NAME,"atc")
+
+# row_text=[]
+
+# for row in res:
+#     row_text.append(row.text)
+
+# df=pd.DataFrame({'text':row_text})
+
+# df.to_csv("./Crawling/danawa.csv")
+    
