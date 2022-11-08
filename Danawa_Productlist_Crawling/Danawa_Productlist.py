@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
 import csv
+import pandas as pd
 
 # window 브라우저 생성
 browser = webdriver.Chrome('C:/chromedriver.exe') 
@@ -44,24 +45,24 @@ while True:
         break
     before_h = after_h
 
-# 파일 생성 - 경로, 쓰기 모드, 인코딩, newline='' window에서 들어가는 자동 줄바꿈 문자 없애기
-f = open(r'C:\Users\hkPark\팀프로젝트\Danawa_Productlist.csv', 'w',encoding= 'CP949', newline='')
-cssWriter = csv.writer(f)
 
+names = []
+prices=[]
+links=[]
 #상품 찾아오기
 items = browser.find_elements(By.CSS_SELECTOR, '.prod_main_info')
-#items2 = browser.find_elements(By.CSS_SELECTOR, '.rank_one') #.prod_pricelist
+
 for item in items:
-    name = item.find_element(By.CSS_SELECTOR, '.prod_name > a').text
+    names.append(item.find_element(By.CSS_SELECTOR, '.prod_name > a').text)
     try:
-        price = item.find_element(By.CSS_SELECTOR, '.price_sect > a').text#p.price_sect > a > strong
+        prices.append(item.find_element(By.CSS_SELECTOR, '.price_sect > a').text)#p.price_sect > a > strong
     except:
         price = '출시예정'
-    link = item.find_element(By.CSS_SELECTOR, '.prod_name > a').get_attribute('href')
-    print(name, price, link)
-    # 데이터 쓰기
-    cssWriter.writerow([name, price, link])
+    links.append(item.find_element(By.CSS_SELECTOR, '.prod_name > a').get_attribute('href'))
+
+    # 파일 쓰기
+    df=pd.DataFrame({'NAME':names,'DATE':prices,'PRODUCT':links})
+    df.to_csv("C:/Users/hkPark/Desktop/졸업과제/Crawling/Danawa_productlist.csv", encoding='utf-8-sig')
 
 
-# 파일 닫기
-f.close()
+
