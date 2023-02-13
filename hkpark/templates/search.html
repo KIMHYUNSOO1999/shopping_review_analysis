@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Search</title>
+  <link href="{{ url_for('static', filename='css/search_style.css') }}" rel="stylesheet" />
+  <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/search.js') }}"></script> -->
+</head>
+<body>
+  <div>
+    <h2 class="title">Shopping Truck</h2>
+    <a class="text">Search for the product!</a>
+  </div>
+  <div class="search-box">
+    <form action="/result" method="post" name="rengs">
+      <input type="text" class="search" name="input" placeholder="Enter to search"  pattern="^[가-힣\sa-zA-Z0-9]+$" oninvalid="alert('검색한 단어(빈칸,특수문자,자음,모움 제외)를 입력해주세요.')" required autofocus>
+      <button type="submit" class="submit"></button>
+    </form>
+  </div>
+
+  <div class="logo">
+
+    <a href="https://www.halla.ac.kr/mbs/kr/index.jsp" target="_blank">
+      <img src="{{ url_for('static', filename='image/HL_logo-removebg-preview.png') }}" title="한라대학교">
+    </a>
+
+    <a href="https://github.com/KIMHYUNSOO1999/shopping_review_analysis" target="_blank">
+      <img src="{{ url_for('static', filename='image/git-removebg-preview.png') }}" title="GitHub">
+    </a>
+
+  </div>
+</body>
+</html>

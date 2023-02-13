@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SimpleShop</title>
+    <meta charset="utf-8" />
+    <link href="{{ url_for('static', filename='css/error_style.css') }}" rel="stylesheet" />
+  </head>
+ 
+  <body>
+    <div class="navbar">
+      <a href="/" id="logo">
+        <img src="{{ url_for('static', filename='image/logo2.jpg') }}" class="logo">
+        </a>
+        <ul id="menu">
+          <li><a href="/">home</a></li>
+          <li><a href="#">shop</a></li>
+          <li><a href="#">cart</a></li>
+          <li><a href="#">login</a></li>
+        </ul>
+    </div>
+    <div class="hero-header"></div>  
+    
+    <div class="error_text">
+      <a>검색 결과가 없습니다...</a>
+      <a href="/"><img src="{{ url_for('static', filename='image/home.png') }}" class="error_home"></a>
+      <a></a>
+    </div>
+    <div class="search_error">
+      <img src="{{ url_for('static', filename='image/search_error2.png') }}" class="error_img">
+    </div>
+    
+    <div class="footer">
+      <div class="hero-footer"></div> 
+    </div>
+
+  </body>
+</html>

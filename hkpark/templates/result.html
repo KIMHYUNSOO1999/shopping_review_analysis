@@ -1,0 +1,136 @@
+<!-- <!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset="UTF-8">
+    <title>Shopping Truck</title>
+    <style>
+    
+        .title {
+            font-weight: bold;
+            font-size: 30px;
+        }
+        
+        .item_list{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            float: left;
+            padding: 20px;
+        }
+
+        .item_list .card{
+            border: 2px solid white;
+            border-radius: 5px;
+            height: 400px;
+            width: 250px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .card img{
+            height: 200px;
+            width: 250px;
+        }
+
+        .buy{
+            background: black;
+            color: white;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+            border: 2px solid white;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .title{
+            font-size: 20px;
+            padding: 5px 0px;
+            text-decoration: none;
+        }
+        .price{
+            font-size: 15px;
+        }
+        .buy a{
+            font-size: 14px;
+            color: white;
+            text-decoration: none;
+        }
+      </style>
+</head>
+<body bgcolor="#5D5D5D">
+
+    <div id="title">
+        <h1 style="color: white; text-align: center;">{{ search }} 검색 결과</h1>
+    </div>
+    
+    <div class="item_list">
+        {% for data in search_list %}
+        <div class="card">
+            <div class="img">
+                <img src="{{ data['img'] }}" alt="">
+            </div>
+            <div class="text">
+                
+
+                
+                <a href="http://127.0.0.1:5000/modal/{{ data['name'] }}" class="title" type="submit" name="prod_name">
+                    <h3 style="color: white;" >{{ data['name'] }}</h3>
+                </a>
+                <button type="submit" class="buy"><a href="{{ data['link'] }}" name="prod_link">사러가기</a></button>
+
+
+                <p style="color: white;" class="price">{{ data['price'] }} 원</p>
+
+                
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+  
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SimpleShop</title>
+    <meta charset="utf-8" />
+    <link href="{{ url_for('static', filename='css/result_style.css') }}" rel="stylesheet" />
+  </head>
+ 
+  <body>
+    <div class="navbar">
+      <a href="/" id="logo">
+        <img src="{{ url_for('static', filename='image/logo2.jpg') }}" class="logo">
+        </a>
+        <ul id="menu">
+          <li><a href="/">home</a></li>
+          <li><a href="#">shop</a></li>
+          <li><a href="#">cart</a></li>
+          <li><a href="#">login</a></li>
+        </ul>
+    </div>
+    <div class="hero-header"></div>  
+    
+    
+    <div class="products">
+      <h3>search products "{{ search }}"</h3>
+      <div class="product-list">
+        {% for data in search_list %}
+            <a href="http://127.0.0.1:5000/modal/{{ data['name'] }}" class="product">
+                <img src="{{ data['img'] }}" width="250">
+                <div class="product-name">
+                    {{ data['name'] }}
+                </div>
+                <div class="product-price">{{ data['price'] }} 원</div>
+            </a>
+        {% endfor %}
+        <div class="clearfix"></div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <div class="hero-footer"></div> 
+    </div>
+  </body>
+</html>

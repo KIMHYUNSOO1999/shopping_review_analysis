@@ -1,0 +1,127 @@
+
+
+.title{
+  /* margin-left: 250px; */
+  margin-top: 50px;
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+.box{
+  background-color: white;
+  border-radius: 10px;
+  padding: 30px;
+  border: 2px solid black;
+  width: 1000px;
+  margin: 0 auto;
+  margin-bottom: 60px;
+}
+
+.big{
+  position: relative;
+  overflow: hidden;
+  padding: 20px 0;
+  border-bottom: 2px solid black;
+  margin-bottom: 20px;
+  padding-bottom: 45px;
+  
+
+}
+.cnt{
+  margin-bottom: 6px;
+  margin-left: 8px;
+  line-height: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  text-overflow: ellipsis;
+  position: relative;
+  top: 2px;
+}
+
+.text{
+  line-height: 22px;
+  max-height: 104px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  line-height: 1.7;
+  overflow: hidden;
+  color: #555;
+  margin-top: 30px;
+  margin-left: 30px;
+}
+
+.top{
+  /* border: 1px solid black; */
+  height: 30px;
+}
+
+.date{
+  margin-left: 3px;
+  position: relative;
+  top: 1px;
+  font-size: 15px;
+}
+
+.mall-logo{
+  width: 60px;
+  height: 25px;
+  margin-bottom: -5px;
+  margin-right: -8px;
+  margin-left: 10px;
+  position: relative;
+  top: -4px;
+}
+
+.name{
+  position: relative;
+  top: -1px;
+  font-size: 15px;
+  margin-right: 5px;
+}
+
+.bar{
+  color: #8C8C8C;
+  position: relative;
+  top: 2px;
+}
+
+.stars{
+  color: #FFF612;
+  font-size: 25px;
+  position: relative;
+  top: 1px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.star{
+  width: 20px;
+  height: 20px;
+  position: relative;
+  top: -2px;
+}
+
+.positive{
+  font-weight: bold;
+  color: #86E57F;
+  position: relative;
+  top: 2px;
+}
+
+.negative{
+  font-weight: bold;
+  color: #F15F5F;
+  position: relative;
+  top: 2px;
+  margin-left: 10px;
+}
+
+
+.paging{
+  margin-left: 31%;
+  padding-top: 20px;
+  /* margin-right: 50%; */
+}

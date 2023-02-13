@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link href="{{ url_for('static', filename='css/review_style.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    
+    <title>Review</title>
+  </head>
+  <body>
+    <div class="review-box">
+      <h1 class="title">리뷰 {{ review_count }}개</h1>
+    </div>
+    <div class="box">
+      {% for data in review %}
+        <div class="big">
+          <div class="top">
+            <span class="logo">
+              <img src="{{ data['mall_logo'] }}" class="mall-logo">    <!-- 각 리뷰별 쇼핑몰 로고 -->
+            </span>
+            <span class="bar">
+              ㅣ
+            </span>
+            <span class="cnt">
+              review {{ loop.index + (page - 1) * per_page }}  <!-- 페이지에 나타나는 데이터에 대한 번호를 나타냄 -->
+            </span>
+            <span class="bar">
+              ㅣ
+            </span>
+            <span class="date">
+              {{ data['date'] }}     <!-- 리뷰 작성 날짜 -->
+            </span>
+            <span class="bar">
+              ㅣ
+            </span>
+            <span class="name">
+              {{ data['name'] }}   <!-- 작성자 이름(아이디) -->
+            </span>
+            <span class="bar">
+              ㅣ
+            </span>
+            <span class="stars">
+              <span class="stars" title="{{ data['star_score'] }}">
+                {% set star = data['star_score'] %}
+                {% if star == 100 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                {% elif star == 80 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% elif star == 60 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% elif star == 40 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% elif star == 20 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% else %}
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% endif %}
+              </span>
+            </span>
+            <span class="bar">
+              ㅣ
+            </span>
+            <span class="positive">            <!-- 각 리뷰에 대한 긍정 단어, 부정 단어의 비율을 나타내고싶음... 임시로 아무값이나 넣음 -->
+              긍정
+              <span class="positive-per">
+                80%
+              </span>
+            </span>
+            <span class="negative">
+              부정
+              <span class="negative-per">
+                20%
+              </span>
+            </span>
+          </div>
+          <div class="text">
+            {{ data['review'] }}    <!-- 리뷰 내용 (3줄까지, 이후 생략(...) )-->
+          </div>
+        </div>
+        
+      {% endfor %}
+      <div class="paging">
+        {{ pagination.links }}   <!--페이지 번호와 이동-->
+      </div>
+    </div>   
+  </body>
+</html>
+
+
+<!-- 페이지네이션(리뷰 페이지 번호) 참고 링크 https://gist.github.com/mozillazg/69fb40067ae6d80386e10e105e6803c9-->
