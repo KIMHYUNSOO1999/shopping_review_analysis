@@ -104,10 +104,22 @@
         <img src="{{ url_for('static', filename='image/logo2.jpg') }}" class="logo">
         </a>
         <ul id="menu">
-          <li><a href="/">home</a></li>
-          <li><a href="#">shop</a></li>
-          <li><a href="#">cart</a></li>
-          <li><a href="#">login</a></li>
+          {% if session['user_id'] %} <!--세션이 있을 때-->
+            <li class="bar">
+                ㅣ
+            </li>
+            <li><a href="#" class="nav-username">{{ session.get('user_id') }} 님</a></li>
+            <li><a href="/logout" class="nav_logout">logout</a></li>
+            <li class="bar">
+                ㅣ
+            </li>
+            <li><a href="/" class="li-menu">home</a></li>
+            <li><a href="/shopping_cart" class="li-menu" id="cart" target="_blank">cart</a></li>
+           {% else %} <!--세션이 없을 때-->
+            <li><a href="/" class="li-menu">home</a></li>
+            <li><a href="#" class="li-menu" onclick="alert('로그인 후 이용가능합니다. 회원가입 또는 로그인을 해주세요.')">cart</a></li>
+            <li><a href="/login" class="li-menu" id="login">login</a></li>
+           {% endif %}
         </ul>
     </div>
     <div class="hero-header"></div>  
@@ -133,4 +145,5 @@
       <div class="hero-footer"></div> 
     </div>
   </body>
+
 </html>

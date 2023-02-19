@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, session, flash
 import requests
 import re
 from bs4 import BeautifulSoup
@@ -19,20 +19,219 @@ from wordcloud import WordCloud, ImageColorGenerator
 import matplotlib.pyplot as plt
 
 from flask_paginate import Pagination, get_page_args
+import os
+import pymysql
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
+
+# ================================================================ 메인(검색) 페이지 ========================================================================
 @app.route('/')
-def hello_world() :
-    return render_template("search.html", img_file ="image/pin_7.JPG")
+def hello_world():
+    return render_template("search.html")
 
-# ===================================================== 에러 페이지 ==============================================================================
+# ==================================================================== 장바구니 비우기 =======================================================================
+@app.route('/cart_delete')
+def cart_delete():
+        # 'DELETE FROM shop_list WHERE uid=%'
+    id = session['user_id']
+
+    db = pymysql.connect(
+        user    = 'root',
+        passwd  = 'rainbow@6861',
+        port    = 3306,
+        host    = 'localhost',
+        db      = 'sqldb',
+        charset = 'utf8'
+    )
+
+    cursor = db.cursor()
+    cursor.execute('DELETE FROM shop_list WHERE uid=%s', [id])   # 해당 아이디에 해당하는 제품들 모두 삭제
+    db.commit()
+    db.close()
+    
+    return redirect(url_for('shopping_cart')) # 장바구니를 비우면 /shopping_cart로 라우팅
+
+# ==================================================================== 장바구니 =============================================================================
+@app.route('/shopping_cart')
+def shopping_cart():
+
+    id = session['user_id'] # 로그인한 유저 아이디(세션 아이디)
+
+    db = pymysql.connect(
+        user    = 'root',
+        passwd  = 'rainbow@6861',
+        port    = 3306,
+        host    = 'localhost',
+        db      = 'sqldb',
+        charset = 'utf8'
+    )
+    cursor = db.cursor()
+    # 장바구니에 해당 유저가 담은 제품 있는지
+    cursor.execute('SELECT product_name, product_price, product_img, product_etc, product_link FROM user, shop_list WHERE user.user_id = shop_list.uid AND user_id=%s', [id])
+    account = cursor.fetchall()
+    shop_list = []
+    if account: # 장바구니에 상품이 존재하면 데이터를 리스트에 저장 후 cart 페이지로
+        for row in account:
+            list = {
+                'product_name' : row[0],
+                'product_price' : row[1],
+                'product_img' : row[2],
+                'product_etc' : row[3],
+                'product_link' : row[4],
+            }
+            shop_list.append(list)
+        db.close()
+
+        return render_template("cart.html", shop_list = shop_list)
+    else: # 장바구니가 비어있으면 empty_cart 페이지로
+
+        db.close()
+        return render_template("empty_cart.html")        # db에서 값 뽑아내는거만 하면 됨
+
+    # return render_template("empty_cart.html")
+
+# =================================================================== 장바구니에 담기 ============================================================
+@app.route('/cart')
+def cart():
+    link = value
+    img = pimg
+    name = pname
+    price = p_price
+    etc = petc
+    id = session['user_id']
+    # if id == None:
+
+
+    db = pymysql.connect(
+        user    = 'root',
+        passwd  = 'rainbow@6861',
+        port    = 3306,
+        host    = 'localhost',
+        db      = 'sqldb',
+        charset = 'utf8'
+    )
+    cursor = db.cursor()
+    # 장바구니에 중복된 제품이 있는지 확인
+    cursor.execute('SELECT shop_list.product_name FROM user, shop_list WHERE shop_list.uid=%s and product_name=%s', [id, name])
+    account = cursor.fetchone()
+
+    if account: # 중복된 제품이 있으면
+
+        return "<script>alert('이미 장바구니에 담은 상품입니다.')</script>"
+        # flash('이미 장바구니에 존재하는 상품입니다.', category="error")
+        # return render_template("modal.html")
+        # 위에처럼 하면 데이터가 로드되지 않네용
+        
+    else:       # 중복된 제품이 없다면 장바구니에 추가
+        cursor.execute('INSERT INTO shop_list (uid, product_name, product_price, product_img, product_etc, product_link) VALUES (%s, %s, %s, %s, %s ,%s)', [id, name, price, img, etc, link])
+        db.commit()
+        db.close()
+
+        return "<script>alert('장바구니에 추가되었습니다.')</script>" # 알림은 보내고 다시 돌아와야 하지만 알림만 보내고 빈 화면. 직접 뒤로가기 해야됨.
+    return redirect(url_for('modal.html'))
+
+
+
+
+
+
+# ==================================================================== 로그 아웃 ========================================================================================
+@app.route('/logout')
+def logout():
+    session.clear()
+    return render_template("search.html")  # 로그아웃 버튼 클릭 시 세션 초기화(로그아웃) 후 첫 페이지로 이동
+
+# =================================================================== 로그인 페이지 =====================================================================================
+# 유저 아이디에 따른 유저 닉네임 가져오기
+# SELECT user_nickname FROM user WHERE user_id="user_id"
+@app.route('/login', methods=['GET','POST'])
+def login():
+    if request.method == 'POST':
+        user_id = request.form['user_id']
+        user_password = request.form['user_password']
+
+        db = pymysql.connect(
+            user    = 'root',
+            passwd  = 'rainbow@6861',
+            port    = 3306,
+            host    = 'localhost',
+            db      = 'sqldb',
+            charset = 'utf8'
+        )
+
+        cursor = db.cursor()
+        cursor.execute('SELECT * FROM user WHERE user_id = %s and user_passwd = %s', [user_id, user_password]) # 아이디, 패스워드 존재 확인
+        account = cursor.fetchone()
+
+        if account: # 유저가 있으면, 로그인 성공(세션 만들기)
+            session['loggedin'] = True
+            session['user_id'] = request.form['user_id']
+
+            return render_template("search.html")
+        
+        else: # 아이디와 비밀번호가 존재하지 않거나 다르면
+            flash('아이디, 비밀번호를 확인해주세요', category="error")
+            return render_template("login.html")
+    # else:
+    #     return redirect(url_for("login.html"))
+
+    return render_template("login.html")
+
+# ================================================================ 회원가입 페이지 =============================================================================
+@app.route('/signup', methods=['GET','POST'])
+def signup():
+    if request.method == 'POST':
+        user_id = request.form['id']
+        user_password = request.form['password']
+        user_email = request.form['email']
+        user_nickname = request.form['nickname']
+        msg = ''
+
+        db = pymysql.connect(
+            user    = 'root',
+            passwd  = 'rainbow@6861',
+            port    = 3306,
+            host    = 'localhost',
+            db      = 'sqldb',
+            charset = 'utf8'
+        )
+        cursor = db.cursor()
+        # sql = 'SELECT * FROM user WHERE user_id=%s'
+        cursor.execute('SELECT * FROM user WHERE user_id=%s', [user_id])
+        account = cursor.fetchone()
+
+        if account: # 아이디 중복
+            msg = "<script>alert('이미 사용중인 아이디 입니다.')</script>"
+            flash('이미 사용중인 아이디 입니다.', category="error")
+            return render_template('signup.html')
+
+        else: # 아니면 회원가입 완료.  회원가입 완료 알람 수정 필요
+            sql = 'INSERT INTO user (user_id, user_passwd, user_email, user_nickname) VALUES (%s, %s, %s, %s)'
+            cursor.execute(sql, (user_id, user_password, user_email, user_nickname))
+            
+            db.commit()
+            db.close()
+
+            flash('회원가입 성공!', category="error")
+            msg = '회원가입 성공!'
+
+            return render_template('login.html')
+
+
+    else:
+        return render_template('signup.html')
+ 
+    return render_template("signup.html")
+
+# ======================================================================== 에러 페이지 =============================================================================================
 @app.route('/error')
 def page_not_found():
     return render_template('error.html') #, 500
 
 @app.route('/result', methods=['GET', 'POST'])
-# ======================================================== 상품 찾아오기 ======================================================================
+# =========================================================================== 상품 찾아오기 =======================================================================================
 def result():
 
     search1 = request.form['input'] # 입력한 단어
@@ -85,8 +284,12 @@ def page(pagename, name):
 
     product_name = name
     
-    #==================================================== 링크를 다시 가져오기 위한 크롤링 ======================================================================
+    #================================================================== 링크를 다시 가져오기 위한 크롤링 ======================================================================
     url = "https://search.danawa.com/dsearch.php?k1=" + product_name
+
+    global value
+    
+
     headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36'}
     res = requests.get(url, headers=headers)
     res.raise_for_status()
@@ -106,7 +309,7 @@ def page(pagename, name):
         value = product_lists['link'] # 리스트에서 link에 해당하는 값
 
 
-    # #==================================================== 리뷰 크롤링 ======================================================================
+    # #==================================================================== 리뷰 크롤링 ================================================================================
     product_link = value + "#bookmark_cm_opinion" # 리뷰를 크롤링하기 위해 추가한거...
 
     # lst = link.split("pcode=")
@@ -157,14 +360,16 @@ def page(pagename, name):
     
     review_len = len(review_lists) # 행 개수
 
-    # ============================================== 클릭한 제품 이름, 사진, 가격, 세부내용 ======================================================================
+    # ====================================================================== 클릭한 제품 이름, 사진, 가격, 세부내용 ================================================================================
     res2 = requests.get(product_link, headers=headers)
     res2.raise_for_status()
     soup2 = BeautifulSoup(res2.text, 'html.parser') #가져온 문서를 html 객체로 만듦
 
     product_data = []
     items = soup2.find('div', attrs={'class':'summary_info'})
-    
+
+    global pimg, pname, p_price, petc # 장바구니에 담을 이미지, 이름, 가격, 세부정보
+
     pimg = items.select_one('#baseImage').get("src") # 사진
     pname = items.select_one('div.top_summary > h3 > span').get_text()
     p_price = items.select_one('div.detail_summary > div.summary_left > div.lowest_area > div.lowest_top > div.row.lowest_price > span.lwst_prc > a > em').get_text()
@@ -177,7 +382,7 @@ def page(pagename, name):
     }
     product_data.append(product_lists)    
 
-    # ============================================================== 워드클라우드 ======================================================================
+    # ================================================================================ 워드클라우드 ======================================================================================
     kkma = Kkma()
 
     df=pd.read_csv("C:/Users/parkh/OneDrive/바탕 화면/한라/danawa.csv")
@@ -263,7 +468,7 @@ def page(pagename, name):
                                 shoplink = value,
                                 wordcloud_img ="image/wordcloud.png")
 
-# =========================================== 리뷰 보기 버튼 클릭 시 분석한 리뷰를 보여주기 위한 페이지 ===================================================   
+# ============================================================== 리뷰 보기 버튼 클릭 시 분석한 리뷰를 보여주기 위한 페이지 ==============================================================   
 def get_users(offset=0, per_page=10):
     return review_list[offset: offset + per_page]
 
@@ -289,5 +494,5 @@ def review():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 

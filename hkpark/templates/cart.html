@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link href="{{ url_for('static', filename='css/cart_style.css') }}" rel="stylesheet" />
+  <title>cart</title>
+</head>
+<body>
+  <div class="header">
+    
+  </div>
+  <div class="title">
+    <img src="/static/image/shopping-cart.png"> 
+    <a>장바구니</a>
+  </div>
+  <div class="clear">
+    <a href="/cart_delete">장바구니 비우기</a>
+  </div>
+
+  <table class="cart">
+    <thead>
+      <tr>
+        <td class="img">상품 사진</td>
+        <td class="info">상품 정보</td>
+        <td class="price">상품 가격</td>
+        <td class="link">상품 링크</td>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for info in shop_list %}
+        <tr class="product_list">
+          <td class="product_img"><img src="{{ info['product_img'] }}"></td>
+          <td class="product_info">
+            <div class="product_name">{{ info['product_name'] }}<br></div>
+            <a class="product_etc">{{ info['product_etc'] }}</a>
+          </td>
+          <td class="product_price">{{ info['product_price'] }} 원</td>
+          <td class="product_link">
+            <a href="{{ info['product_link'] }}" target="_blank">사러가기</a>
+            <!-- <a href="#">삭제하기</a> -->
+          </td>
+        </tr>
+      {% endfor %}
+
+    </tbody> 
+  </table>
+  <!-- <hr class="line"></hr>
+  <div class="empty-cart">
+    <img src="/images/empty-shopping-cart.png">
+    <div>장바구니가 비어있습니다.</div>
+  </div>
+  <hr class="line2"></hr>-->
+  <div class="footer">
+
+  </div> 
+</body>
+</html>

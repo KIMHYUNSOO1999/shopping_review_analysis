@@ -72,9 +72,9 @@ body{
   border-radius: 0;
   background-position: 100% center;
 }
-.search:invalid{
+/* .search:invalid{
 
-}
+} */
 
 .submit{
   position: relative;
@@ -89,7 +89,7 @@ body{
 
 .logo{
   position: absolute;
-  top: 65%;
+  top: 70%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
@@ -105,4 +105,118 @@ img{
 }
 a{
   text-decoration: none;
+}
+
+.user{
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.login{
+  position: relative;
+  float: left;
+  margin: 10px;
+  font-size: 20px;
+}
+.login a{
+  text-decoration: none; 
+  color: antiquewhite;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.login a:hover{
+  background-color:rgb(255, 255, 255, 0.2);
+  transition:  0.5s;
+}
+
+.signin{
+  position: relative;
+  float: right;
+  margin-left: 70px;
+  margin-top: 10px;
+  font-size: 20px;
+}
+
+.signin a{
+  color: antiquewhite;
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.signin a:hover{
+  background-color:rgb(255, 255, 255, 0.2);
+  transition:  0.5s;
+}
+
+.user-info{
+  background-color:rgb(255, 255, 255, 0.2);
+  position: absolute;
+  width: 200px;
+  height: 100px;
+  border-radius: 10px;
+  text-align: center;
+  /* display: none; */
+}
+
+.nickname{
+  padding-top: 18px;
+  margin-left: 35px;
+  margin-right: 30px;
+  color: white;
+  float: left;
+}
+
+.logout{
+  float: right;
+  /* position: relative; */
+  margin-top: 12px;
+  /* margin-left: 16px; */
+  text-decoration: none;
+  color: white;
+  margin-right: 15px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.logout:hover{
+  background-color:rgb(255, 255, 255, 0.2);
+  transition:  0.5s;
+}
+
+.shop{
+  float: left;
+  /* position: absolute; */
+  margin-top: 12px;
+  margin-left: 20px;
+  text-decoration: none;
+  color: white;
+  margin-right: 26px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.shop:hover{
+  background-color:rgb(255, 255, 255, 0.2);
+  transition:  0.5s;
+}
+
+
+.user-info2{
+  border: 2px solid white;
+  position: absolute;
+  width: 100px;
+  height: 30px;
+  border-radius: 10px;
+  text-align: center;
+  /* display: none; */
+}
+
+.nickname2{
+  padding-top: 4px;
+  margin-left: 18px;
+  color: white;
+  float: left;
 }

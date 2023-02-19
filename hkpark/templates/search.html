@@ -7,6 +7,18 @@
   <!-- <script type="text/javascript" src="{{ url_for('static', filename='js/search.js') }}"></script> -->
 </head>
 <body>
+
+  <!-- 세션이 존재하면 아이디를 표시, 아니면 로그인 필요 표시 -->
+  {% if session['user_id'] %} 
+    <div class="user-info">
+      <div class="nickname">{{ session.get('user_id') }} 님</div>
+      <a href="/shopping_cart" class="shop" target="_blank">장바구니</a>
+      <a href="/logout" class="logout">로그아웃</a>
+    </div>
+  {% else %} <!--세션이 없으면 아무것도 표시하지 않음-->
+    <div></div> 
+  {% endif %}
+
   <div>
     <h2 class="title">Shopping Truck</h2>
     <a class="text">Search for the product!</a>
@@ -17,6 +29,21 @@
       <button type="submit" class="submit"></button>
     </form>
   </div>
+
+  <!-- 세션이 존재하면 로그인, 회원가입 숨김 -->
+  {% if session['user_id'] %}
+    <div></div>
+  {% else %}  <!--세션이 없으면 로그인, 회원가입 보여줌-->
+    <div class="user">
+      <div class="login">
+        <a href="/login" id="login">로그인</a>
+      </div>
+      <div class="signin">
+        <a href="/signup">회원가입</a>
+      </div>
+    </div>
+  {% endif %}
+
 
   <div class="logo">
 
@@ -29,5 +56,6 @@
     </a>
 
   </div>
+
 </body>
 </html>

@@ -40,6 +40,32 @@ body {
   font-size: 17px;
   font-weight: bold;
 }
+
+.navbar #menu li a:hover{
+  background-color: #F2F2E2;
+  transition: .5s;
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.nav-username{
+  text-decoration: none;
+  color: #545454;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.bar{
+  color: #545454;
+  font-size: 25px;
+}
+#cart{
+  margin-right: 30px;
+}
+
+#login{
+  margin-right: 30px;
+}
  
 /* hero header */
 .hero-header{
@@ -73,7 +99,8 @@ body {
 }
 .product-list{
   width: 90%;
-  margin-left: 10%;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 .product{
   width: 265px;

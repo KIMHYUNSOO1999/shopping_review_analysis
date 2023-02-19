@@ -18,6 +18,13 @@
   
 </body>
 </html> -->
+<!-- {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <script>
+            alert("{{messages[-1]}}")
+        </script>
+    {% endif %}
+{% endwith %} -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,10 +39,22 @@
       <img src="{{ url_for('static', filename='image/logo2.jpg') }}" class="logo">
       </a>
       <ul id="menu">
-        <li><a href="/">home</a></li>
-        <li><a href="#">shop</a></li>
-        <li><a href="#">cart</a></li>
-        <li><a href="#">login</a></li>
+        {% if session['user_id'] %} <!--세션이 있을 때-->
+        <li class="bar">
+            ㅣ
+        </li>
+        <li><a href="#" class="nav-username">{{ session.get('user_id') }} 님</a></li>
+        <li><a href="/logout" class="nav_logout">logout</a></li>
+        <li class="bar">
+            ㅣ
+        </li>
+        <li><a href="/" class="li-menu">home</a></li>
+        <li><a href="/shopping_cart" class="li-menu" id="cart" target="_blank">cart</a></li>
+       {% else %} <!--세션이 없을 때-->
+        <li><a href="/" class="li-menu">home</a></li>
+        <li><a href="#" class="li-menu" onclick="alert('로그인 후 이용가능합니다. 회원가입 또는 로그인을 해주세요.')">cart</a></li>
+        <li><a href="/login" class="li-menu" id="login">login</a></li>
+       {% endif %}
       </ul>
   </div>
 
@@ -49,6 +68,11 @@
             <div class="product_price">{{ info['price'] }} 원</div>
             <a href="{{ shoplink }}" class="product_link" target="_blank">상품 보기</a>
             <a href="http://127.0.0.1:5000/review" class="product_link2" target="_blank">리뷰 보기</a>
+            {% if session['user_id'] %} <!--세션이 있을 때-->
+              <a href="/cart" class="like"><img src="/static/image/heart.png"></a>
+            {% else %} <!--세션이 없을 때-->
+              <a href="#" class="like" onclick="alert('로그인 후 이용가능합니다. 회원가입 또는 로그인을 해주세요.')"><img src="/static/image/heart.png"></a>
+            {% endif %}
             <!-- <button class="product_link">상품 보기</button></a> -->
         </div>
 
@@ -86,5 +110,25 @@
   <div class="footer">
     <div class="hero-footer"></div> 
   </div>
+  
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <script type="text/javascript">
+      alert("{{ messages[-1] }}")
+    </script>
+    {% endif %}
+  {% endwith %}
+  <!-- <script>
+    function click(){
+      var data = JSON.parse( {{ data|safe }} );
+      if (data == 1){
+
+
+      }
+      else{
+
+      }
+    }
+  </script> -->
 </body>
 </html>

@@ -52,6 +52,32 @@ body {
   font-weight: bold;
 }
 
+.navbar #menu li a:hover{
+  background-color: #F2F2E2;
+  transition: .5s;
+  border-radius: 15px;
+  padding: 10px;
+}
+
+.nav-username{
+  text-decoration: none;
+  color: #545454;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.bar{
+  color: #545454;
+  font-size: 25px;
+}
+#cart{
+  margin-right: 30px;
+}
+
+#login{
+  margin-right: 30px;
+}
+
 /* hero header */
 .hero-header{
   height: 500px;
@@ -136,10 +162,26 @@ body {
 
 .product_link:hover{
   background: #C9AA56;
+  transition: 0.5s;
 }
 
 .product_link2:hover{
   background: #C9AA56;
+  transition: 0.5s;
+}
+
+.like img{
+  position: relative;
+  top: 118px;
+  height: 50px;
+  width: 50px;
+  margin-left: 30px;
+}
+
+.like img:hover{
+  background-color: red;
+  border-radius: 100%;
+  transition: 0.5s;
 }
 
 /* product_img */
