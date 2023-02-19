@@ -50,6 +50,8 @@ def cart_delete():
     cursor.execute('DELETE FROM shop_list WHERE uid=%s', [id])   # 해당 아이디에 해당하는 제품들 모두 삭제
     db.commit()
     db.close()
+
+    flash("장바구니 내역을 삭제하였습니다.")
     
     return redirect(url_for('shopping_cart')) # 장바구니를 비우면 /shopping_cart로 라우팅
 
@@ -90,7 +92,6 @@ def shopping_cart():
         db.close()
         return render_template("empty_cart.html")        # db에서 값 뽑아내는거만 하면 됨
 
-    # return render_template("empty_cart.html")
 
 # =================================================================== 장바구니에 담기 ============================================================
 @app.route('/cart')
@@ -118,18 +119,17 @@ def cart():
     account = cursor.fetchone()
 
     if account: # 중복된 제품이 있으면
-
-        return "<script>alert('이미 장바구니에 담은 상품입니다.')</script>"
-        # flash('이미 장바구니에 존재하는 상품입니다.', category="error")
-        # return render_template("modal.html")
-        # 위에처럼 하면 데이터가 로드되지 않네용
+        flash('이미 장바구니에 담은 상품입니다.')
+        return redirect(url_for('main'))
         
     else:       # 중복된 제품이 없다면 장바구니에 추가
         cursor.execute('INSERT INTO shop_list (uid, product_name, product_price, product_img, product_etc, product_link) VALUES (%s, %s, %s, %s, %s ,%s)', [id, name, price, img, etc, link])
         db.commit()
         db.close()
 
-        return "<script>alert('장바구니에 추가되었습니다.')</script>" # 알림은 보내고 다시 돌아와야 하지만 알림만 보내고 빈 화면. 직접 뒤로가기 해야됨.
+        flash('장바구니에 추가되었습니다.')
+        return redirect(url_for('main'))
+
     return redirect(url_for('modal.html'))
 
 
@@ -144,8 +144,6 @@ def logout():
     return render_template("search.html")  # 로그아웃 버튼 클릭 시 세션 초기화(로그아웃) 후 첫 페이지로 이동
 
 # =================================================================== 로그인 페이지 =====================================================================================
-# 유저 아이디에 따른 유저 닉네임 가져오기
-# SELECT user_nickname FROM user WHERE user_id="user_id"
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
@@ -174,8 +172,6 @@ def login():
         else: # 아이디와 비밀번호가 존재하지 않거나 다르면
             flash('아이디, 비밀번호를 확인해주세요', category="error")
             return render_template("login.html")
-    # else:
-    #     return redirect(url_for("login.html"))
 
     return render_template("login.html")
 
@@ -198,12 +194,11 @@ def signup():
             charset = 'utf8'
         )
         cursor = db.cursor()
-        # sql = 'SELECT * FROM user WHERE user_id=%s'
+
         cursor.execute('SELECT * FROM user WHERE user_id=%s', [user_id])
         account = cursor.fetchone()
 
         if account: # 아이디 중복
-            msg = "<script>alert('이미 사용중인 아이디 입니다.')</script>"
             flash('이미 사용중인 아이디 입니다.', category="error")
             return render_template('signup.html')
 
@@ -215,8 +210,6 @@ def signup():
             db.close()
 
             flash('회원가입 성공!', category="error")
-            msg = '회원가입 성공!'
-
             return render_template('login.html')
 
 
@@ -309,10 +302,9 @@ def page(pagename, name):
         value = product_lists['link'] # 리스트에서 link에 해당하는 값
 
 
-    # #==================================================================== 리뷰 크롤링 ================================================================================
+    # ==================================================================== 리뷰 크롤링 ================================================================================
     product_link = value + "#bookmark_cm_opinion" # 리뷰를 크롤링하기 위해 추가한거...
 
-    # lst = link.split("pcode=")
     link = value
     m = re.search('pcode=(.+?)&keyword', link)   # 상품 코드 가져오기
     if m:
@@ -365,6 +357,7 @@ def page(pagename, name):
     res2.raise_for_status()
     soup2 = BeautifulSoup(res2.text, 'html.parser') #가져온 문서를 html 객체로 만듦
 
+    global product_data
     product_data = []
     items = soup2.find('div', attrs={'class':'summary_info'})
 
@@ -459,14 +452,16 @@ def page(pagename, name):
     plt.savefig('C:/Users/parkh/OneDrive/바탕 화면/한라/static/image/wordcloud.png')
     #plt.show()  
 
+    return redirect(url_for('main')) # 작업이 끝나면 main 으로 라우팅
 
-    return render_template(f'{pagename}.html', 
-                                name = name, 
-                                value=product_link, 
-                                review_list = review_list,
-                                product_data = product_data,
-                                shoplink = value,
-                                wordcloud_img ="image/wordcloud.png")
+
+# ============================================================== 리뷰, 워드클라우드 등 결과 표시 페이지 ================================================================================
+@app.route('/main', methods=['GET', 'POST'])
+def main():
+    # reviews = review_list
+    plink = value
+    product_info = product_data
+    return render_template('modal.html', shoplink = plink, product_data = product_info)
 
 # ============================================================== 리뷰 보기 버튼 클릭 시 분석한 리뷰를 보여주기 위한 페이지 ==============================================================   
 def get_users(offset=0, per_page=10):
@@ -474,7 +469,7 @@ def get_users(offset=0, per_page=10):
 
 @app.route('/review', methods=['GET', 'POST'])
 def review():
-    review = review_list
+
     page, per_page, offset = get_page_args(page_parameter='page',
                                            per_page_parameter='per_page')
     total = len(review_list)
