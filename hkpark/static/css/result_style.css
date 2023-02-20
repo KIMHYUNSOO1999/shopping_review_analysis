@@ -6,6 +6,7 @@ body {
   margin: 0;
   min-width: 992px;
   font-family: "Helvetica";
+  padding-top: 60px;
 }
  
 /* navbar */
@@ -13,6 +14,12 @@ body {
   height: 60px;
   padding-left: 30px;
   padding-right: 30px;
+  background-color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
 }
 .navbar #logo {
   line-height: 60px;
@@ -144,8 +151,8 @@ body {
 }
 
 .logo{
-  width: 60px;
-  height: 60px;
+  width: 58px;
+  height: 58px;
 }
 
 /* hero footer */

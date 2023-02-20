@@ -30,6 +30,7 @@
 
       {% for info in shop_list %}
         <tr class="product_list">
+
           <td class="product_img"><img src="{{ info['product_img'] }}"></td>
           <td class="product_info">
             <div class="product_name">{{ info['product_name'] }}<br></div>
@@ -38,6 +39,12 @@
           <td class="product_price">{{ info['product_price'] }} 원</td>
           <td class="product_link">
             <a href="{{ info['product_link'] }}" target="_blank">사러가기</a>
+            <!-- 해당 제품만 삭제하기 위한 숨겨진 폼을 이용해 해당 제품 이름을 전달 -->
+            <form action="/delete" method="post">
+              <input type="hidden" value="{{ info['product_name'] }}" name="pname">
+              <button type="submit" class="delete-button">삭제하기</button>
+            </form>
+            
             <!-- <a href="#">삭제하기</a> -->
           </td>
         </tr>
@@ -45,6 +52,13 @@
 
     </tbody> 
   </table>
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <script type="text/javascript">
+      alert("{{ messages[-1] }}")
+    </script>
+    {% endif %}
+  {% endwith %}
   <!-- <hr class="line"></hr>
   <div class="empty-cart">
     <img src="/images/empty-shopping-cart.png">

@@ -30,6 +30,28 @@ app.secret_key = os.urandom(24)
 @app.route('/')
 def hello_world():
     return render_template("search.html")
+# ================================================================= 특정 장바구니 상품만 삭제 =============================================
+@app.route('/delete',  methods=['GET','POST'])
+def delete():
+    user_id = session['user_id']
+    pname = request.form.get('pname')
+
+    db = pymysql.connect(
+        user    = 'root',
+        passwd  = 'rainbow@6861',
+        port    = 3306,
+        host    = 'localhost',
+        db      = 'sqldb',
+        charset = 'utf8'
+    )
+    cursor = db.cursor()
+    cursor.execute('DELETE FROM shop_list WHERE uid = %s AND product_name = %s', [user_id, pname])   # 아이디와 해당 제품 이름에 해당하는거만 삭제
+    db.commit()
+    db.close()
+
+    flash("삭제되었습니다.")
+
+    return redirect(url_for('shopping_cart'))
 
 # ==================================================================== 장바구니 비우기 =======================================================================
 @app.route('/cart_delete')
@@ -483,7 +505,8 @@ def review():
                             page=page,
                             per_page=per_page,
                             pagination=pagination,
-                            review_count = count)
+                            review_count = count,
+                            )
 
     
 

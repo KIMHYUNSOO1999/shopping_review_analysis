@@ -171,3 +171,18 @@ td{
 .clear a:hover{
   background-color:rgb(255, 220, 108);
 }
+
+.delete-button{
+  padding: 10px;
+  border-radius: 5px;
+  background-color: rgb(255, 220, 108, 0.6);
+  color: black;
+  font-weight: bold;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.delete-button:hover{
+  background-color:rgb(255, 220, 108);
+}

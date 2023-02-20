@@ -2,16 +2,19 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <link href="{{ url_for('static', filename='css/review_style.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link href="{{ url_for('static', filename='css/review_style.css') }}" rel="stylesheet" />
+    
 
     
     <title>Review</title>
   </head>
   <body>
+    
     <div class="review-box">
       <h1 class="title">리뷰 {{ review_count }}개</h1>
     </div>
+
     <div class="box">
       {% for data in review %}
         <div class="big">

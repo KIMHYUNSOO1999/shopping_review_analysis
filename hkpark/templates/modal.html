@@ -1,36 +1,10 @@
-<!-- <!DOCTYPE html>
-<html lang="kr">
-<head>
-  <title>Analyze</title>
-</head>
-<body bgcolor="#5D5D5D">
-  {% for info in product_data %}
-    <li> {{ info['name'] }} </li>
-    <li> {{ info['price'] }} </li>
-    <li> {{ info['etc'] }} </li>
-    <div class="img">
-      <img src="{{ info['img'] }}" alt="">
-    </div>
-  {% endfor %}
-
- 
-
-  
-</body>
-</html> -->
-<!-- {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <script>
-            alert("{{messages[-1]}}")
-        </script>
-    {% endif %}
-{% endwith %} -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>testPage</title>
   <link href="{{ url_for('static', filename='css/modal_style.css') }}" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 </head>
 <body>
   <!-- 네비게이션 -->
@@ -67,13 +41,13 @@
             <div class="product_etc" title="{{ info['etc'] }}">{{ info['etc'] }}</div>
             <div class="product_price">{{ info['price'] }} 원</div>
             <a href="{{ shoplink }}" class="product_link" target="_blank">상품 보기</a>
-            <a href="http://127.0.0.1:5000/review" class="product_link2" target="_blank">리뷰 보기</a>
+            <a href="/review" class="product_link2" target="_blank" data-toggle="modal">리뷰 보기</a>
+            <!-- <a href="/review" class="product_link2">리뷰 보기</a> -->
             {% if session['user_id'] %} <!--세션이 있을 때-->
               <a href="/cart" class="like"><img src="/static/image/heart.png"></a>
             {% else %} <!--세션이 없을 때-->
               <a href="#" class="like" onclick="alert('로그인 후 이용가능합니다. 회원가입 또는 로그인을 해주세요.')"><img src="/static/image/heart.png"></a>
             {% endif %}
-            <!-- <button class="product_link">상품 보기</button></a> -->
         </div>
 
         <div class="product_img">
@@ -82,7 +56,9 @@
         </div>
     {% endfor %}
   </div>
-
+  <div class="review-background">
+    <div class="review-content"></div>
+  </div>
   <!-- 댓글 분석 -->
   <div style="text-align: center;">
     <div class="product_info">
@@ -106,9 +82,10 @@
     </div>
   </div>
 
-
   <div class="footer">
-    <div class="hero-footer"></div> 
+    <div class="hero-footer">
+
+    </div> 
   </div>
   
   {% with messages = get_flashed_messages() %}
@@ -118,17 +95,16 @@
     </script>
     {% endif %}
   {% endwith %}
+  
   <!-- <script>
-    function click(){
-      var data = JSON.parse( {{ data|safe }} );
-      if (data == 1){
-
-
-      }
-      else{
-
-      }
-    }
+    $("review.html").ready(function () {
+    $(".product_link2").click(function () {
+        $.get("/review")
+            .then(function () {
+              $(".review-content").load("review.html");
+            });
+        });
+    });
   </script> -->
 </body>
 </html>
