@@ -21,6 +21,9 @@ import matplotlib.pyplot as plt
 from flask_paginate import Pagination, get_page_args
 import os
 import pymysql
+import pymysql.cursors
+from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
+import bcrypt
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -170,7 +173,7 @@ def logout():
 def login():
     if request.method == 'POST':
         user_id = request.form['user_id']
-        user_password = request.form['user_password']
+        user_password = request.form['user_password'].encode('utf-8') # 입력된 비밀번호를 바이트 코드로
 
         db = pymysql.connect(
             user    = 'root',
@@ -181,11 +184,16 @@ def login():
             charset = 'utf8'
         )
 
-        cursor = db.cursor()
-        cursor.execute('SELECT * FROM user WHERE user_id = %s and user_passwd = %s', [user_id, user_password]) # 아이디, 패스워드 존재 확인
+        cursor = db.cursor(pymysql.cursors.DictCursor)
+        # cursor.execute('SELECT * FROM user WHERE user_id = %s and user_passwd = %s', [user_id, user_password]) # 아이디, 패스워드 존재 확인
+        cursor.execute('SELECT * FROM user WHERE user_id = %s', [user_id])
         account = cursor.fetchone()
 
-        if account: # 유저가 있으면, 로그인 성공(세션 만들기)
+        origin_password = bytes.fromhex(account['user_passwd']) # 기존 저장된 값을 비교하기 위해 hex에서 byte로 
+     
+        check = bcrypt.checkpw(user_password, origin_password) # 입력한 비밀번호와 저장된 비밀번호 체크
+
+        if account and check: # 유저와 암호화된 패스워드 확인 시 로그인 성공(세션 만들기)
             session['loggedin'] = True
             session['user_id'] = request.form['user_id']
 
@@ -205,7 +213,9 @@ def signup():
         user_password = request.form['password']
         user_email = request.form['email']
         user_nickname = request.form['nickname']
-        msg = ''
+
+        # 입력한 비밀번호를 해싱을 위해 바이트 코드로 변환 후 해싱, 저장을 위해 16진수로 변환
+        hash_password = bcrypt.hashpw(user_password.encode('utf-8'), bcrypt.gensalt()).hex()
 
         db = pymysql.connect(
             user    = 'root',
@@ -226,8 +236,8 @@ def signup():
 
         else: # 아니면 회원가입 완료.  회원가입 완료 알람 수정 필요
             sql = 'INSERT INTO user (user_id, user_passwd, user_email, user_nickname) VALUES (%s, %s, %s, %s)'
-            cursor.execute(sql, (user_id, user_password, user_email, user_nickname))
-            
+            cursor.execute(sql, (user_id, hash_password, user_email, user_nickname))
+
             db.commit()
             db.close()
 
