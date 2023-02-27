@@ -25,6 +25,11 @@ import pymysql.cursors
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 import bcrypt
 
+# 긍정 부정 리뷰 형태소 분석 및 워드클라우드(테스트)
+import jpype
+from konlpy.tag import Okt
+from collections import Counter
+
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
@@ -353,8 +358,10 @@ def page(pagename, name):
     review_page = round(int(count.replace(',', '')) / 10)  # 리뷰 총 페이지 수 
 
     # 리뷰 beautifulsoup
-    global review_list
+    global review_list, pos_review_list, neg_review_list
     review_list = []    
+    pos_review_list = []
+    neg_review_list = []
        
     # for i in tqdm(range(1,review_page+1)):
     for i in tqdm(range(1,20)):
@@ -371,12 +378,37 @@ def page(pagename, name):
             date = res.select_one('.date').get_text() # 리뷰 작성 날짜
             name = res.select_one('.name').get_text() # 작성자 아이디(이름)
             star_score = int(res.select_one('.star_mask').get_text().replace("점", "")) # 별점 0, 20, 40, 60, 80, 100
+            if int(star_score) >= 80:
+                label = 1 # 긍정 80~100점 (별 4~5개)
+                pos_review_lists = {
+                    'review' : review,
+                    'mall_logo' : mall,
+                    'date' : date,
+                    'name' : name,
+                    'star_score' : star_score,
+                    'label' : label
+                }
+                pos_review_list.append(pos_review_lists)
+            elif int(star_score) <= 40:
+                label = 0 # 부정 0~40점 (별 0~2개)
+                neg_review_lists = {
+                    'review' : review,
+                    'mall_logo' : mall,
+                    'date' : date,
+                    'name' : name,
+                    'star_score' : star_score,
+                    'label' : label
+                }
+                neg_review_list.append(neg_review_lists)
+            else:
+                label = 2 # 나머지(별 3개)
             review_lists = {
                 'review' : review,
                 'mall_logo' : mall,
                 'date' : date,
                 'name' : name,
                 'star_score' : star_score,
+                'label' : label
             }
             review_list.append(review_lists)
     df=pd.DataFrame(review_list)
@@ -408,92 +440,180 @@ def page(pagename, name):
     product_data.append(product_lists)    
 
     # ================================================================================ 워드클라우드 ======================================================================================
-    kkma = Kkma()
+    positive_reviews = df[df['label'] == 1]
+    negative_reviews = df[df['label'] == 0]
+    middle_reviews = df[df['label'] == 2]
 
-    df=pd.read_csv("C:/Users/parkh/OneDrive/바탕 화면/한라/danawa.csv")
-    del df["Unnamed: 0"]
+    okt = Okt()
+    # =========================================== 긍정 리뷰 명사 추출, 워드 클라우드 ==============================================================
+    pos_comment_nouns = []
+    for cmt in positive_reviews['review']:
+        pos_comment_nouns.extend(okt.nouns(cmt)) #-- 명사만 추출
+    #-- 추출된 명사 중에서 길이가 1보다 큰 단어만 추출
+    pos_comment_nouns2 = []
+    word = [w for w in pos_comment_nouns if len(w) > 1]  
+    pos_comment_nouns2.extend(word)
 
-    article_list=[]
+    pos_word_count = Counter(pos_comment_nouns2)
 
-    for i in range(10):
-        article_list.append(df.loc[i,'review'])
-
-    kkma.pos(article_list[0])
-
-    pos_list = ["NNG", "NNP"]
-    tag_sentence_list = []
-
-    now = 0
-    for article in article_list:
-        now += 1
-        print(now, end="\r")
-        sentence_list = kkma.sentences(article)
-        tag_sentence = []
-        for sentence in sentence_list:
-            tag_list = kkma.pos(sentence)
-            for word, pos in tag_list:
-                if pos in pos_list and word and len(word) > 1:
-                    tag_sentence.append(word)
-        tag_sentence_list.append(tag_sentence)
-
-    word_frequency = {}
-
-    for tag_sentence in tag_sentence_list:
-        for word in tag_sentence:
-            if word in word_frequency.keys():
-                word_frequency[word] += 1
-            else:
-                word_frequency[word] = 1
-
-    word_count = []
-    for word, freq in word_frequency.items():
-        word_count.append([word, freq])
-    word_count.sort(key=lambda elem: elem[1], reverse=True)
-
-    for word, freq in word_count[:20]:
-        print(word + "\t" + str(freq))
-        
-    noun_string = ""
-
-    for tag_sentence in tag_sentence_list:
-
-        import random
-        random.shuffle(tag_sentence)
-        for word in tag_sentence:
-            noun_string += word + " "
-
-    noun_string = noun_string.strip()
-
-    font_path='C:/Windows/Fonts/NanumGothic.ttf'  
-    background_color="white"      
-    margin=10                     
-    min_font_size=10              
-    max_font_size=150             
-    width=500                     
-    height=500                   
-    wc = WordCloud(font_path=font_path, background_color=background_color, \
-                margin=margin, min_font_size=min_font_size, \
-                max_font_size=max_font_size, width=width, height=height, prefer_horizontal = True)
-
-    wc.generate(noun_string)
-
-
+    # 긍정 리뷰 단어 top
+    max = 100
+    pos_top_20 = {}
+ 
+    for word, counts in pos_word_count.most_common(max):
+        pos_top_20[word] = counts  # top 20 단어, 가격
+    
+    wordcloud = WordCloud(font_path='C:/Windows/Fonts/NanumGothic.ttf',
+                        background_color='white',
+                        colormap="OrRd",
+                        width = 500, height = 500, margin = 10, prefer_horizontal = True).generate_from_frequencies(pos_top_20)
     plt.figure(figsize=(15, 15))
-    plt.imshow(wc, interpolation="bilinear")
+    plt.imshow(wordcloud)
     plt.axis("off")
-    plt.savefig('C:/Users/parkh/OneDrive/바탕 화면/한라/static/image/wordcloud.png')
-    #plt.show()  
+    plt.savefig('C:/Users/parkh/OneDrive/바탕 화면/한라/static/image/positive_wordcloud.png')
 
-    return redirect(url_for('main')) # 작업이 끝나면 main 으로 라우팅
+    # =========================================== 부정 리뷰 명사 추출 ==============================================================
+    neg_comment_nouns = []
+    for cmt in negative_reviews['review']:
+        neg_comment_nouns.extend(okt.nouns(cmt)) 
+
+    neg_comment_nouns2 = []
+    word = [w for w in neg_comment_nouns if len(w) > 1]  
+    neg_comment_nouns2.extend(word)  
+        
+    #-- 단어 빈도 계산
+    neg_word_count = Counter(neg_comment_nouns2)
+
+    #-- 빈도수가 많은 상위 단어 추출
+    max = 100
+    neg_top_20 = {}
+   
+    for word, counts in neg_word_count.most_common(max):
+        neg_top_20[word] = counts
+
+    wordcloud = WordCloud(font_path='C:/Windows/Fonts/NanumGothic.ttf',
+                        background_color='white',
+                        colormap="BuPu",
+                        width = 500, height = 500, margin = 10, prefer_horizontal = True).generate_from_frequencies(neg_top_20)
+    plt.figure(figsize=(15, 15))
+    plt.imshow(wordcloud)
+    plt.axis("off")
+    plt.savefig('C:/Users/parkh/OneDrive/바탕 화면/한라/static/image/negative_wordcloud.png')
+
+    return redirect(url_for('main'))
+    # kkma = Kkma()
+
+    # df=pd.read_csv("C:/Users/parkh/OneDrive/바탕 화면/한라/danawa.csv")
+    # del df["Unnamed: 0"]
+
+    # article_list=[]
+
+    # for i in range(10):
+    #     article_list.append(df.loc[i,'review'])
+
+    # kkma.pos(article_list[0])
+
+    # pos_list = ["NNG", "NNP"]
+    # tag_sentence_list = []
+
+    # now = 0
+    # for article in article_list:
+    #     now += 1
+    #     print(now, end="\r")
+    #     sentence_list = kkma.sentences(article)
+    #     tag_sentence = []
+    #     for sentence in sentence_list:
+    #         tag_list = kkma.pos(sentence)
+    #         for word, pos in tag_list:
+    #             if pos in pos_list and word and len(word) > 1:
+    #                 tag_sentence.append(word)
+    #     tag_sentence_list.append(tag_sentence)
+
+    # word_frequency = {}
+
+    # for tag_sentence in tag_sentence_list:
+    #     for word in tag_sentence:
+    #         if word in word_frequency.keys():
+    #             word_frequency[word] += 1
+    #         else:
+    #             word_frequency[word] = 1
+
+    # word_count = []
+    # for word, freq in word_frequency.items():
+    #     word_count.append([word, freq])
+    # word_count.sort(key=lambda elem: elem[1], reverse=True)
+
+    # for word, freq in word_count[:20]:
+    #     print(word + "\t" + str(freq))
+        
+    # noun_string = ""
+
+    # for tag_sentence in tag_sentence_list:
+
+    #     import random
+    #     random.shuffle(tag_sentence)
+    #     for word in tag_sentence:
+    #         noun_string += word + " "
+
+    # noun_string = noun_string.strip()
+
+    # font_path='C:/Windows/Fonts/NanumGothic.ttf'  
+    # background_color="white"      
+    # margin=10                     
+    # min_font_size=10              
+    # max_font_size=150             
+    # width=500                     
+    # height=500                   
+    # wc = WordCloud(font_path=font_path, background_color=background_color, \
+    #             margin=margin, min_font_size=min_font_size, \
+    #             max_font_size=max_font_size, width=width, height=height, prefer_horizontal = True)
+
+    # wc.generate(noun_string)
+
+
+    # plt.figure(figsize=(15, 15))
+    # plt.imshow(wc, interpolation="bilinear")
+    # plt.axis("off")
+    # plt.savefig('C:/Users/parkh/OneDrive/바탕 화면/한라/static/image/wordcloud.png')
+    # #plt.show()  
+
+    # return redirect(url_for('main')) # 작업이 끝나면 main 으로 라우팅
 
 
 # ============================================================== 리뷰, 워드클라우드 등 결과 표시 페이지 ================================================================================
 @app.route('/main', methods=['GET', 'POST'])
 def main():
-    # reviews = review_list
+
     plink = value
     product_info = product_data
-    return render_template('modal.html', shoplink = plink, product_data = product_info)
+
+    # 긍정 리뷰 top 3개
+    pos_review = []
+    for i in pos_review_list[:3]:
+        positive_review ={
+            'review' : i["review"],
+            'name' : i["name"],
+            'mall_logo' : i["mall_logo"],
+            'date' : i["date"],
+        }
+        pos_review.append(positive_review)
+
+    # 부정 리뷰 top 3개
+    neg_review = []
+    for i in neg_review_list[:3]:
+        negative_review ={
+            'review' : i["review"],
+            'name' : i["name"],
+            'mall_logo' : i["mall_logo"],
+            'date' : i["date"],
+        }
+        neg_review.append(negative_review)
+
+    return render_template('modal.html',                          
+                            shoplink = plink, 
+                            product_data = product_info,
+                            pos_review = pos_review,
+                            neg_review = neg_review)
 
 # ============================================================== 리뷰 보기 버튼 클릭 시 분석한 리뷰를 보여주기 위한 페이지 ==============================================================   
 def get_users(offset=0, per_page=10):
@@ -522,5 +642,5 @@ def review():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)
 

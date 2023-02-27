@@ -10,10 +10,16 @@
     <title>Review</title>
   </head>
   <body>
-    
-    <div class="review-box">
-      <h1 class="title">리뷰 {{ review_count }}개</h1>
+    <div class="top">
+
     </div>
+    <div class="review-box">
+      <h1 class="title">리뷰 ({{ review_count }})</h1>
+    </div>
+
+    <!-- <div class="close-button" onclick="modalClose()">
+      <img src="/static/image/closed.png">
+    </div> -->
 
     <div class="box">
       {% for data in review %}
