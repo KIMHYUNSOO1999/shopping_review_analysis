@@ -15,14 +15,15 @@
 
     </div>
     <div class="review-box">
-      <h1 class="title">전체 리뷰 ({{ review_count }})</h1>
+      <span class="title"> 리뷰 ({{ review_count }})</span>
+      <span><img src="{{ url_for('static', filename='image/star3.png') }}" class="title-star"></span>
     </div>
 
     <div class="combo">
       <select class="select-star" onchange="location.href=this.value">
         <option class="none" value="/review">===== 선택 ======</option>
-        <option class="all" value="/review" selected>전체</option>
-        <option class="one-star" value="/one">1개 &#xf005</option>
+        <option class="all" value="/review">전체</option>
+        <option class="one-star" value="/one" selected>1개 &#xf005</option>
         <option class="two-star" value="/two">2개 &#xf005 &#xf005</option>
         <option class="three-star" value="/three">3개 &#xf005 &#xf005 &#xf005</option>
         
@@ -36,7 +37,7 @@
     </div> -->
 
     <div class="box">
-      {% for data in review %}
+      {% for data in one_star %}
         <div class="big">
           <div class="top">
             <span class="logo">
@@ -65,7 +66,7 @@
             </span>
             <span class="stars">
               <span class="stars" title="{{ data['star_score'] }}">
-                {% set star = data['star_score'] %}
+                {% set star = data['star'] %}
                 {% if star == 100 %}
                   <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
                   <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
@@ -133,6 +134,3 @@
     </div>   
   </body>
 </html>
-
-
-<!-- 페이지네이션(리뷰 페이지 번호) 참고 링크 https://gist.github.com/mozillazg/69fb40067ae6d80386e10e105e6803c9-->

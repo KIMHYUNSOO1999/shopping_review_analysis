@@ -493,7 +493,7 @@ def page(pagename, name):
 
     wordcloud = WordCloud(font_path='C:/Windows/Fonts/NanumGothic.ttf',
                         background_color='white',
-                        colormap="BuPu",
+                        colormap="PuRd",
                         width = 500, height = 500, margin = 10, prefer_horizontal = True).generate_from_frequencies(neg_top_20)
     plt.figure(figsize=(15, 15))
     plt.imshow(wordcloud)
@@ -615,8 +615,8 @@ def main():
                             pos_review = pos_review,
                             neg_review = neg_review)
 
-# ============================================================== 리뷰 보기 버튼 클릭 시 분석한 리뷰를 보여주기 위한 페이지 ==============================================================   
-def get_users(offset=0, per_page=10):
+# ============================================================== 리뷰 보기 버튼 클릭 시 분석한 리뷰를 보여주기 위한 페이지 (전체 리뷰)==============================================================   
+def get_users(offset=0, per_page=10): # 전체
     return review_list[offset: offset + per_page]
 
 @app.route('/review', methods=['GET', 'POST'])
@@ -638,9 +638,173 @@ def review():
                             review_count = count,
                             )
 
-    
+# =================================================================================== 별 1개  리뷰 =====================================================================================
+def get_users_one(offset=0, per_page=10): # 별 1개
+    return one_star[offset: offset + per_page]
+
+@app.route('/one', methods=['GET', 'POST'])
+def one():
+    global one_star
+    one_star = []
+    for i in review_list:
+        if i["star_score"] == 20:
+            one = {
+                'review' : i["review"],
+                'name' : i["name"],
+                'mall_logo' : i["mall_logo"],
+                'date' : i["date"],
+                'star' : i["star_score"]
+            }
+            one_star.append(one)
+
+    page, per_page, offset = get_page_args(page_parameter='page',
+                                            per_page_parameter='per_page')
+    total = len(one_star)
+    pagination_users = get_users_one(offset=offset, per_page=per_page)
+    pagination = Pagination(page=page, per_page=per_page, total=total,
+                            css_framework='bootstrap4')
+    one_count = len(one_star)
+    return render_template('one_star.html', 
+                            one_star = pagination_users,
+                            page=page,
+                            per_page=per_page,
+                            pagination=pagination,
+                            review_count = one_count)
+
+# =================================================================================== 별 2개  리뷰 =====================================================================================
+def get_users_two(offset=0, per_page=10): # 별 2개
+    return two_star[offset: offset + per_page]
+
+@app.route('/two', methods=['GET', 'POST'])
+def two():
+    global two_star
+    two_star = []
+    for i in review_list:
+        if i["star_score"] == 40:
+            two = {
+                'review' : i["review"],
+                'name' : i["name"],
+                'mall_logo' : i["mall_logo"],
+                'date' : i["date"],
+                'star' : i["star_score"]
+            }
+            two_star.append(two)
+
+    page, per_page, offset = get_page_args(page_parameter='page',
+                                            per_page_parameter='per_page')
+    total = len(two_star)
+    pagination_users = get_users_two(offset=offset, per_page=per_page)
+    pagination = Pagination(page=page, per_page=per_page, total=total,
+                            css_framework='bootstrap4')
+    two_count = len(two_star)
+    return render_template('two_star.html', 
+                            two_star = pagination_users,
+                            page=page,
+                            per_page=per_page,
+                            pagination=pagination,
+                            review_count = two_count)
+
+# =================================================================================== 별 3개  리뷰 =====================================================================================
+def get_users_three(offset=0, per_page=10): # 별 3개
+    return three_star[offset: offset + per_page]
+
+@app.route('/three', methods=['GET', 'POST'])
+def three():
+    global three_star
+    three_star = []
+    for i in review_list:
+        if i["star_score"] == 60:
+            three = {
+                'review' : i["review"],
+                'name' : i["name"],
+                'mall_logo' : i["mall_logo"],
+                'date' : i["date"],
+                'star' : i["star_score"]
+            }
+            three_star.append(three)
+
+    page, per_page, offset = get_page_args(page_parameter='page',
+                                            per_page_parameter='per_page')
+    total = len(three_star)
+    pagination_users = get_users_three(offset=offset, per_page=per_page)
+    pagination = Pagination(page=page, per_page=per_page, total=total,
+                            css_framework='bootstrap4')
+    three_count = len(three_star)
+    return render_template('three_star.html', 
+                            three_star = pagination_users,
+                            page=page,
+                            per_page=per_page,
+                            pagination=pagination,
+                            review_count = three_count)
+
+# =================================================================================== 별 4개  리뷰 =====================================================================================
+def get_users_four(offset=0, per_page=10): # 별 4개
+    return four_star[offset: offset + per_page]
+
+
+@app.route('/four', methods=['GET', 'POST'])
+def four():
+    global four_star
+    four_star = []
+    for i in review_list:
+        if i["star_score"] == 80:
+            four = {
+                'review' : i["review"],
+                'name' : i["name"],
+                'mall_logo' : i["mall_logo"],
+                'date' : i["date"],
+                'star' : i["star_score"]
+            }
+            four_star.append(four)
+
+    page, per_page, offset = get_page_args(page_parameter='page',
+                                            per_page_parameter='per_page')
+    total = len(four_star)
+    pagination_users = get_users_four(offset=offset, per_page=per_page)
+    pagination = Pagination(page=page, per_page=per_page, total=total,
+                            css_framework='bootstrap4')
+    four_count = len(four_star)
+    return render_template('four_star.html', 
+                            four_star = pagination_users,
+                            page=page,
+                            per_page=per_page,
+                            pagination=pagination,
+                            review_count = four_count)
+
+# =================================================================================== 별 5개  리뷰 =====================================================================================
+def get_users_five(offset=0, per_page=10): # 별 5개
+    return five_star[offset: offset + per_page]
+
+@app.route('/five', methods=['GET', 'POST'])
+def five():
+    global five_star
+    five_star = []
+    for i in review_list:
+        if i["star_score"] == 100:
+            five = {
+                'review' : i["review"],
+                'name' : i["name"],
+                'mall_logo' : i["mall_logo"],
+                'date' : i["date"],
+                'star' : i["star_score"]
+            }
+            five_star.append(five)
+
+    page, per_page, offset = get_page_args(page_parameter='page',
+                                            per_page_parameter='per_page')
+    total = len(five_star)
+    pagination_users = get_users_five(offset=offset, per_page=per_page)
+    pagination = Pagination(page=page, per_page=per_page, total=total,
+                            css_framework='bootstrap4')
+    five_count = len(five_star)
+    return render_template('five_star.html', 
+                            five_star = pagination_users,
+                            page=page,
+                            per_page=per_page,
+                            pagination=pagination,
+                            review_count = five_count)
 
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True)
+    app.run(debug=True, threaded=True, processes=20, use_reloader=False)
 
