@@ -1,9 +1,11 @@
+"""
 !pip install mxnet
 !pip install gluonnlp pandas tqdm
 !pip install sentencepiece
 !pip install transformers==3.0.2
 !pip install torch
 !pip install git+https://git@github.com/SKTBrain/KoBERT.git@master
+"""
 
 # torch
 import torch
