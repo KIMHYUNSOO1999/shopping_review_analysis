@@ -53,7 +53,9 @@ def get_title_score2():
 
     df = pd.read_csv(BASE_DIR/'Processing/danawa2.csv')
       
-    df = df.drop('Unnamed: 0',axis= 1)
+    df['review'] = df['review'].str.replace("[^ㄱ-ㅎㅏ-ㅣ가-힣 ]","")
+    df['review'].nunique()
+    df.drop_duplicates(subset=['review'], inplace=True)
 
     X_data = df['review']
     MAX_SEQ_LEN = 80
