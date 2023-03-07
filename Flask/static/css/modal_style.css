@@ -7,8 +7,8 @@
 
 /* logo */
 .logo{
-  width: 55px;
-  height: 55px;
+  width: 53px;
+  height: 53px;
 }
 
 body {
@@ -26,7 +26,7 @@ body {
   padding-right: 30px;
   background-color: white;
   position: fixed;
-  /* top: -8px; */
+  border-bottom: 3px solid lightgray;
   top: 0;
   left: 0;
   right: 0;
@@ -225,13 +225,13 @@ body {
 .review{
   margin-left: 100px;
   margin-bottom: 30px;
-  margin-top: 30px;
+  margin-top: 20px;
+  margin-right: 50px;
   width: 500px;
-  height: 458px;
+  height: 465px;
   border: 3px solid #F2F2E2;
   border-radius: 10px;
   display: inline-block;
-  float: left;
   text-align: left;
   /* color: #F2F2E2; */
   /* text-shadow:2px 2px 2px #000; */
@@ -241,8 +241,18 @@ body {
   font-size: 25px;
   font-weight: bold;
   font-family: 'Do Hyeon', sans-serif;
-  padding-left: 10px;
+  padding-left: 20px;
   padding-right: 10px;
+}
+
+.pos{
+  margin-right: 20px;
+  color: rgb(23, 214, 23);
+}
+
+#neg{
+  margin-right: 20px;
+  color: red;
 }
 
 .first, .second, .third{
@@ -269,20 +279,21 @@ body {
 
 .wordcloud{
   width: 500px;
-  height: 445px;
+  height: 435px;
   border: 3px solid #F2F2E2;
   border-radius: 10px;
-  margin-top: 44px;
+  /* margin-top: 41px; */
   margin-right: 100px;
   display: inline-block;
-  float: right;
+  position: relative;
+  top: 5px;
 }
 
 .wordcloud_img{
   object-fit: cover;
   width: 495px;
-  height: 440px;
-  padding: 5px;
+  height: 425px;
+  padding: 15px;
 }
 
 /* hero footer */
@@ -293,6 +304,7 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
+  margin-top: 50px;
 }
 
 
@@ -312,10 +324,285 @@ body {
 }
 
 .pos-info, .neg-info{
-  margin-top: 10px;
+  /* margin-top: 5px; */
   margin-bottom: 10px;
 }
 
 .bar{
   font-size: 20px;
+}
+
+
+
+/* 모달 */
+.title{
+  margin-left: 12%;
+  margin-top: 50px;
+  z-index: 1;
+  color: white;
+}
+.empty{
+  width: 60%;
+  min-height: 500px;
+  min-width: 1000px;
+  height: 90%;
+  position: absolute;
+  top: 55px;
+  left: 20%;            
+  border: 3px solid black;       
+  background-image: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ),url("../image/background_img3.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  border-radius: 10px;
+}
+.box{
+  background-color: white;
+  border-radius: 10px;
+  padding: 30px;
+  border: 3px solid black;
+  width: 80%;
+  height: 80%;
+  margin: 10px auto;
+  overflow-y: auto;
+}
+
+.big{
+  position: relative;
+  overflow: hidden;
+  padding: 20px 0;
+  border-bottom: 2px solid black;
+  margin-bottom: 20px;
+  padding-bottom: 45px;
+  
+
+}
+.cnt{
+  margin-bottom: 6px;
+  margin-left: 8px;
+  line-height: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  text-overflow: ellipsis;
+  position: relative;
+  top: 2px;
+}
+
+.text{
+  line-height: 22px;
+  max-height: 104px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  line-height: 1.7;
+  overflow: hidden;
+  color: #555;
+  margin-top: 30px;
+  margin-left: 30px;
+}
+
+.top{
+  /* border: 1px solid black; */
+  height: 30px;
+}
+
+.date{
+  margin-left: 3px;
+  position: relative;
+  top: 1px;
+  font-size: 15px;
+}
+
+.mall-logo{
+  width: 60px;
+  height: 25px;
+  margin-bottom: -5px;
+  margin-right: -8px;
+  margin-left: 10px;
+  position: relative;
+  top: 2px;
+}
+
+.name{
+  position: relative;
+  top: -1px;
+  font-size: 15px;
+  margin-right: 5px;
+}
+
+.bar{
+  color: #8C8C8C;
+  position: relative;
+  top: 2px;
+}
+
+.stars{
+  color: #FFF612;
+  font-size: 25px;
+  position: relative;
+  top: 1px;
+  margin-left: 5px;
+}
+
+.star{
+  width: 20px;
+  height: 20px;
+  position: relative;
+  top: 2px;
+}
+
+.positive{
+  font-weight: bold;
+  color: #86E57F;
+  position: relative;
+  top: 2px;
+  font-size: 20px;
+}
+
+.negative{
+  font-weight: bold;
+  color: #F15F5F;
+  position: relative;
+  top: 2px;
+  font-size: 20px;
+}
+
+.pos-modal-background, .neg-modal-background{
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  padding: 50px;
+  background-color: rgb(0, 0, 0, 0.7);
+  top: 0;
+  left: 0;
+  z-index: 1;
+  display: none;
+}
+
+.close-button{
+  float: right;
+}
+
+.close-button img{
+  width: 55px;
+  height: 55px;
+  cursor: pointer;
+  position: absolute;
+  top: 50px;
+  right: 12%;
+}
+
+.more{
+  margin-left: 20px;
+  margin-right: 20px;
+  font-size: 50px;
+  position: relative;
+  text-decoration: none;
+  color: black;
+  top: 4px;
+  cursor: pointer;
+}
+.more a{
+  text-decoration: none;
+  color: black;
+}
+.more img{
+  width: 25px;
+  height: 25px;
+}
+
+.chart1{
+  margin-left: 100px;
+  margin-right: 50px;
+  margin-bottom: 30px;
+  margin-top: 60px;
+  width: 500px;
+  height: 460px;
+  border: 3px solid #F2F2E2;
+  border-radius: 10px;
+  display: inline-block;
+}
+.chart2{
+  width: 500px;
+  height: 460px;
+  border: 3px solid #F2F2E2;
+  border-radius: 10px;
+  margin-top: 60px;
+  margin-right: 100px;
+  display: inline-block;
+}
+
+.chart1 img{
+  width: 470px;
+  height: 453px;
+  margin-left: 5px;
+}
+.chart2 img{
+  width: 470px;
+  height: 453px;
+}
+
+.foot-bar{
+  border: 2px solid lightgray;
+  margin-top: 85px;
+}
+
+.pro-sug{
+  font-size: 30px;
+  font-weight: bold;
+  float: left;
+  margin-top: 30px;
+  margin-left: 20px;
+}
+
+.sug-product{
+  /* border: 1px solid black; */
+  width: 98%;
+  height: 400px;
+  margin: 0 auto;
+  margin-top: 40px;
+  display: flex;
+}
+.sug-product a{
+  text-decoration: none;
+  color: black;
+}
+
+.foot-bar2{
+  border: 2px solid lightgray;
+  margin-top: 40px;
+}
+
+.s-product{
+  border: 1px solid #dbdbcb;
+  border-radius: 10px;
+  width: 230px;
+  height: 350px;
+  margin: auto;
+}
+
+.s-product img{
+  width: 220px;
+  height: 200px;
+  margin: 0 auto;
+  margin-top: 15px;
+}
+
+.sug-title{
+  font-size: 18px;
+  font-weight: bold;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  /* line-height: 1.7; */
+  overflow: hidden;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.sug-price{
+  font-size: 18px;
 }

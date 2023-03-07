@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>testPage</title>
+  <title>Shopping_cart - Product</title>
   <link href="{{ url_for('static', filename='css/modal_style.css') }}" rel="stylesheet" />
   <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 </head>
@@ -43,9 +43,6 @@
             <a href="{{ shoplink }}" class="product_link" target="_blank">상품 보기</a>
             <a href="/review" class="product_link2" target="_blank" data-toggle="modal">리뷰 보기</a>
 
-            <!-- 테스트 테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트테스트-->
-            <!-- <a href="#" class="product_link2" onclick="modalOpen()">리뷰 보기</a> -->
-
             {% if session['user_id'] %} <!--세션이 있을 때-->
               <a href="/cart" class="like"><img src="/static/image/heart.png"></a>
             {% else %} <!--세션이 없을 때-->
@@ -64,9 +61,17 @@
   <!-- 댓글 분석 -->
   <div style="text-align: center;">
     <div class="product_info">
+
+      <div class="chart1">
+        <img src="{{ url_for('static', filename='image/donut_chart.png') }}" class="donut-chart">
+      </div>
+
+      <div class="chart2">
+        <img src="{{ url_for('static', filename='image/bar_chart.png') }}" class="donut-chart">
+      </div>
       
       <fieldset class="review">
-        <legend><div>Positive review Top 3</div></legend>
+        <legend><span class="pos">긍정 리뷰</span>Top 3<span class="more"><a onclick="posModal()"><img src="{{ url_for('static', filename='image/add.png') }}"></a></span></legend>
         {% for data in pos_review %}
           <div class="pos-info">
             <span class="first"><img src="{{ data['mall_logo'] }}" class="mall_logo"></span>
@@ -80,37 +85,246 @@
       </fieldset>
     
       <div class="wordcloud">
-        <img src="{{ url_for('static', filename='image/positive_wordcloud.png') }}" class="wordcloud_img">
+        <img src="{{ url_for('static', filename='image/pos_wordcloud.png') }}" class="wordcloud_img">
       </div>
-    </div>
+    
 
-    <div class="product_info">
-      <fieldset class="review">
-        <legend><div>Negative review Top 3</div></legend>
-        {% for data in neg_review %}
-          <div class="neg-info">
-            <span class="first"><img src="{{ data['mall_logo'] }}" class="mall_logo"></span>
-            <span class="bar"> ㅣ </span>
-            <span class="name">{{ data['name'] }}</span>
-            <span class="bar"> ㅣ </span>
-            <span class="date">{{ data['date'] }}</span>
-          </div>
-          <div class="first_review">{{ data['review'] }}</div>
-        {% endfor %}
-      </fieldset>
+      <div class="product_info">
+        <fieldset class="review">
+          <legend><span id="neg">부정 리뷰</span>Top 3<span class="more"><a onclick="negModal()"><img src="{{ url_for('static', filename='image/add.png') }}"></a></span></legend>
+          {% for data in neg_review %}
+            <div class="neg-info">
+              <span class="first"><img src="{{ data['mall_logo'] }}" class="mall_logo"></span>
+              <span class="bar"> ㅣ </span>
+              <span class="name">{{ data['name'] }}</span>
+              <span class="bar"> ㅣ </span>
+              <span class="date">{{ data['date'] }}</span>
+            </div>
+            <div class="first_review">{{ data['review'] }}</div>
+          {% endfor %}
+        </fieldset>
 
-      <div class="wordcloud">
-        <img src="{{ url_for('static', filename='image/negative_wordcloud.png') }}" class="wordcloud_img">
+        <div class="wordcloud">
+          <img src="{{ url_for('static', filename='image/neg_wordcloud.png') }}" class="wordcloud_img">
+        </div>
+
+        <div class="pro-sug"><a>제품 추천</a></div>
+        <hr class="foot-bar" />
+        <div class="sug-product">
+
+          {% for data in suggest_list %}
+            
+              <div class="s-product">
+                <a href="{{ data['link'] }}" target="_blank">
+                  <img src="{{ data['img'] }}" title="{{ data['name'] }}">
+                  <p title="{{ data['name'] }}" class="sug-title">{{ data['name'] }}</p>
+                  <p class="sug-price" title="{{ data['price'] }}">{{ data['price'] }} 원</p>
+                </a>
+              </div>
+            
+          {% endfor %}
+        </div>
+
+        <hr class="foot-bar2" />
       </div>
     </div>
   </div>
-
-
-
   <div class="footer">
     <div class="hero-footer">
     </div>
   </div>
+  <!-- 긍정 리뷰 모달-->
+  <div class="pos-modal-background">
+    <div class="empty">
+      <div class="review-box">
+        <h1 class="title">긍정 리뷰</h1>
+      </div>
+      <div class="close-button" onclick="posModalClose()">
+        <img src="{{ url_for('static', filename='image/white-close.png') }}">
+      </div>
+      <div class="box">
+        {% for text in good_text %}
+          <div class="big">
+            <div class="top">
+              <span class="logo">
+                <img src="{{ text['mall_logo'] }}" class="mall-logo">
+              </span>
+              <span class="bar">
+                ㅣ
+              </span>
+              <span class="date">
+                {{ text['date'] }}
+              </span>
+              <span class="bar">
+                ㅣ
+              </span>
+              <span class="name">
+                {{ text['name'] }}
+              </span>
+              <span class="bar">
+                ㅣ
+              </span>
+              <span class="stars">
+                {% set star = text['star_score'] %}
+                {% if star == 100 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                {% elif star == 80 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% elif star == 60 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% elif star == 40 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% elif star == 20 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% else %}
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% endif %}
+              </span>
+    
+              <span class="bar">
+                ㅣ
+              </span>
+              {% set label = text['label'] %}
+              {% if label == 1 %}
+                <span class="positive">
+                  긍정
+                </span>
+              {% else %}
+                <span class="negative">
+                  부정
+                </span>
+              {% endif %}
+            </div>
+            <div class="text">
+              {{ text['review'] }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 부정 리뷰 모달-->
+  <div class="neg-modal-background">
+    <div class="empty">
+      <div class="review-box">
+        <h1 class="title">부정 리뷰</h1>
+      </div>
+      <div class="close-button" onclick="negModalClose()">
+        <img src="{{ url_for('static', filename='image/white-close.png') }}">
+      </div>
+      <div class="box">
+        {% for text in bad_text %}
+          <div class="big">
+            <div class="top">
+              <span class="logo">
+                <img src="{{ text['mall_logo'] }}" class="mall-logo">
+              </span>
+              <span class="bar">
+                ㅣ
+              </span>
+              <span class="date">
+                {{ text['date'] }}
+              </span>
+              <span class="bar">
+                ㅣ
+              </span>
+              <span class="name">
+                {{ text['name'] }}
+              </span>
+              <span class="bar">
+                ㅣ
+              </span>
+              <span class="stars">
+                {% set star = text['star_score'] %}
+                {% if star == 100 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                {% elif star == 80 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% elif star == 60 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% elif star == 40 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% elif star == 20 %}
+                  <img src="{{ url_for('static', filename='image/star.jpg') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% else %}
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                  <img src="{{ url_for('static', filename='image/empty_star.png') }}" class="star">
+                {% endif %}
+              </span>
+    
+              <span class="bar">
+                ㅣ
+              </span>
+              {% set label = text['label'] %}
+              {% if label == 1 %}
+                <span class="positive">
+                  긍정
+                </span>
+              {% else %}
+                <span class="negative">
+                  부정
+                </span>
+              {% endif %}
+            </div>
+            <div class="text">
+              {{ text['review'] }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+
+
 
   {% with messages = get_flashed_messages() %}
   {% if messages %}
@@ -120,41 +334,30 @@
     {% endif %}
   {% endwith %}
 
-
-
 </body>
-<!-- <script>
-    // 리뷰 보기 버튼을 눌렀을 때, 리뷰 창 보이기, 외부 스크롤 비활성화, 네비게이션 위치 변화
-  function modalOpen() {
-    document.querySelector('.test').style.display = 'block';
-    document.querySelector('.navbar').style.position = "relative";
-    document.body.style.overflow = "hidden";
-    document.body.style.paddingTop = '0px';
-    document.querySelector('.navbar').style.zIndex = "0"; 
+<script>
+  //긍정 모달
+  function posModal() {
+    document.querySelector('.pos-modal-background').style.display = 'block'; //리뷰 창 보이기
+    document.body.style.overflow = "hidden"; //외부 스크롤 비활성화
   };
 
-  // 닫기 버튼을 눌렀을 때, 리뷰 창 숨기기, 다시 외부 스크롤 활성화, 네비게이션 원래대로
-  function modalClose() {
-    document.querySelector('.test').style.display = 'none';
-    document.querySelector('.navbar').style.position = 'fixed';
-    document.body.style.overflow = "auto";
-    document.body.style.paddingTop = '60px';
-    document.querySelector('.navbar').style.zIndex = '1';
+  function posModalClose() {
+    document.querySelector('.pos-modal-background').style.display = 'none'; //리뷰 창 숨기기
+    document.body.style.overflow = "auto"; // 외부 스크롤 활성화
   };
 
-  // 임시로 리뷰 페이지를 이동해도 리뷰 창이 안꺼지게
-  // 다른 페이지 갔다가 다시 1페이지로 가면 리뷰 창이 사라져버림
-  // 그냥 페이지 맨 아래쪽에 리뷰를 박아버릴까 생각중..
-  current = 'http://127.0.0.1:5000/main';
-  first_page = 'http://127.0.0.1:5000/main#';
-  if(window.location.href == current){
-    $(document).ready(function() {
-      document.querySelector('.test').style.display = 'none';
-    });
-  }else{
-    document.querySelector('.test').style.display = 'block';
-    document.body.style.overflow = "hidden";
-  } -->
+  //부정 모달
+  function negModal() {
+    document.querySelector('.neg-modal-background').style.display = 'block'; //리뷰 창 보이기
+    document.body.style.overflow = "hidden"; //외부 스크롤 비활성화
+  };
+
+  function negModalClose() {
+    document.querySelector('.neg-modal-background').style.display = 'none'; //리뷰 창 숨기기
+    document.body.style.overflow = "auto"; // 외부 스크롤 활성화
+  };
 
 </script>
+
 </html>

@@ -4,19 +4,14 @@ import re
 from bs4 import BeautifulSoup
 import re
 
-from selenium import webdriver
-import chromedriver_autoinstaller
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 import pandas as pd
-import time
 from tqdm import tqdm
 import csv
 
-from konlpy.tag import Kkma
-import pandas as pd
-from wordcloud import WordCloud, ImageColorGenerator
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import matplotlib.pyplot as plt
+from PIL import Image
+import seaborn as sns
 
 from flask_paginate import Pagination, get_page_args
 import os
@@ -25,13 +20,26 @@ import pymysql.cursors
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 import bcrypt
 
-# 긍정 부정 리뷰 형태소 분석 및 워드클라우드(테스트)
-import jpype
 from konlpy.tag import Okt
 from collections import Counter
 
+import numpy as np
+import tensorflow as tf
+from transformers import BertTokenizer, TFBertForSequenceClassification
+from tensorflow_addons.optimizers import RectifiedAdam
+
+tf.keras.optimizers.RectifiedAdam = RectifiedAdam
+
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+# ================================================================ 시작 전 모델 로드 =================================================================
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_NAME = "klue/bert-base"
+tokenizer = BertTokenizer.from_pretrained(MODEL_NAME)
+global model
+model  = tf.keras.models.load_model(BASE_DIR/'model/best_model.h5',
+                                                    custom_objects={'TFBertForSequenceClassification': TFBertForSequenceClassification})
 
 
 # ================================================================ 메인(검색) 페이지 ========================================================================
@@ -193,20 +201,24 @@ def login():
         # cursor.execute('SELECT * FROM user WHERE user_id = %s and user_passwd = %s', [user_id, user_password]) # 아이디, 패스워드 존재 확인
         cursor.execute('SELECT * FROM user WHERE user_id = %s', [user_id])
         account = cursor.fetchone()
-
-        origin_password = bytes.fromhex(account['user_passwd']) # 기존 저장된 값을 비교하기 위해 hex에서 byte로 
-     
-        check = bcrypt.checkpw(user_password, origin_password) # 입력한 비밀번호와 저장된 비밀번호 체크
-
-        if account and check: # 유저와 암호화된 패스워드 확인 시 로그인 성공(세션 만들기)
-            session['loggedin'] = True
-            session['user_id'] = request.form['user_id']
-
-            return render_template("search.html")
+        if account:
+            origin_password = bytes.fromhex(account['user_password']) # 기존 저장된 값을 비교하기 위해 hex에서 byte로 
         
-        else: # 아이디와 비밀번호가 존재하지 않거나 다르면
+            check = bcrypt.checkpw(user_password, origin_password) # 입력한 비밀번호와 저장된 비밀번호 체크
+
+            if account and check: # 유저와 암호화된 패스워드 확인 시 로그인 성공(세션 만들기)
+                session['loggedin'] = True
+                session['user_id'] = request.form['user_id']
+
+                return render_template("search.html")
+            
+            else: # 아이디와 비밀번호가 존재하지 않거나 다르면
+                flash('아이디, 비밀번호를 확인해주세요', category="error")
+                return render_template("login.html")
+        else:
             flash('아이디, 비밀번호를 확인해주세요', category="error")
             return render_template("login.html")
+          
 
     return render_template("login.html")
 
@@ -240,7 +252,7 @@ def signup():
             return render_template('signup.html')
 
         else: # 아니면 회원가입 완료.  회원가입 완료 알람 수정 필요
-            sql = 'INSERT INTO user (user_id, user_passwd, user_email, user_nickname) VALUES (%s, %s, %s, %s)'
+            sql = 'INSERT INTO user (user_id, user_password, user_email, user_nickname) VALUES (%s, %s, %s, %s)'
             cursor.execute(sql, (user_id, hash_password, user_email, user_nickname))
 
             db.commit()
@@ -412,7 +424,7 @@ def page(pagename, name):
             }
             review_list.append(review_lists)
     df=pd.DataFrame(review_list)
-    df.to_csv("C:/Users/parkh/OneDrive/바탕 화면/한라/danawa.csv", encoding='utf-8-sig')
+    df.to_csv("danawa.csv", encoding='utf-8-sig')
     
     review_len = len(review_lists) # 행 개수
 
@@ -431,155 +443,138 @@ def page(pagename, name):
     pname = items.select_one('div.top_summary > h3 > span').get_text()
     p_price = items.select_one('div.detail_summary > div.summary_left > div.lowest_area > div.lowest_top > div.row.lowest_price > span.lwst_prc > a > em').get_text()
     petc = items.select_one('div.top_summary > div > div.sub_dsc > div > dl > dd > div > div').get_text().replace(' ','')
+    company = items.select_one('#makerTxtArea').get_text().replace('\n', '').replace('\t', '').replace('제조사:', '').replace(' ', '') # 제조사
     product_lists = {
         'img' : pimg,
         'name' : pname,
         'price' : p_price,
-        'etc' : petc
+        'etc' : petc,
+        'company' : company
     }
-    product_data.append(product_lists)    
+    product_data.append(product_lists) 
 
-    # ================================================================================ 워드클라우드 ======================================================================================
-    positive_reviews = df[df['label'] == 1]
-    negative_reviews = df[df['label'] == 0]
-    middle_reviews = df[df['label'] == 2]
+    df_prod = pd.DataFrame(product_data)   
+    etc_prod = df_prod['etc'][0]
+    cate = etc_prod.split("/", 1)
+    #cate[0]
+    category = cate[0]
+
+    company = df_prod['company'][0]
+
+    # =============================================================================== 제조사, 카테고리 관련 제품 추천 =======================================================================
+
+    sug(company, category)
+
+    # ================================================================================ 텍스트 긍부정 라벨  ======================================================================================
+
+    get_title_score2()
+
+   # ================================================================================ 워드클라우드 ===========================================================================================
+    okt = Okt()
+
+    df2 = pd.read_csv('danawa_label.csv', encoding='CP949')
+    del df2['Unnamed: 0']
+    good_text=[]
+    bad_text=[]
+
+    for i in range(len(df2)):
+        if df2.loc[i,'label']==1:
+            good_text.append(df2.loc[i,'review'])
+        else:
+            bad_text.append(df2.loc[i,'review'])
+
+    good_text = [x for x in good_text if pd.isnull(x) == False]
+    bad_text = [x for x in bad_text if pd.isnull(x) == False]
 
     okt = Okt()
-    # =========================================== 긍정 리뷰 명사 추출, 워드 클라우드 ==============================================================
-    pos_comment_nouns = []
-    for cmt in positive_reviews['review']:
-        pos_comment_nouns.extend(okt.nouns(cmt)) #-- 명사만 추출
-    #-- 추출된 명사 중에서 길이가 1보다 큰 단어만 추출
-    pos_comment_nouns2 = []
-    word = [w for w in pos_comment_nouns if len(w) > 1]  
-    pos_comment_nouns2.extend(word)
 
-    pos_word_count = Counter(pos_comment_nouns2)
+    good_morphs = []
+    bad_morphs = []
 
-    # 긍정 리뷰 단어 top
+    for i in range(len(good_text)):
+        try:
+            good_morphs.append(okt.pos(good_text[i]))
+        except UnicodeDecodeError:
+            pass
+
+    for i in range(len(bad_text)):
+        try:
+            bad_morphs.append(okt.pos(bad_text[i]))
+        except UnicodeDecodeError:
+            pass
+
+    good_list=[] 
+    bad_list=[] 
+
+    for sentence in good_morphs : 
+        for word, tag in sentence : 
+            if tag in ['Noun','Adjective']:
+                good_list.append(word)
+
+    for sentence in bad_morphs : 
+        for word, tag in sentence : 
+            if tag in ['Noun','Adjective']:
+                bad_list.append(word)
+     
+    good_count = Counter(good_list)
+    good_word = dict(good_count.most_common())
+
+    bad_count = Counter(bad_list)
+    bad_word = dict(bad_count.most_common())
+
+    import matplotlib 
+    from IPython.display import set_matplotlib_formats 
+    matplotlib.rc('font',family = 'Malgun Gothic') 
+    set_matplotlib_formats('retina') 
+    matplotlib.rc('axes',unicode_minus = False)
+
     max = 100
-    pos_top_20 = {}
- 
-    for word, counts in pos_word_count.most_common(max):
-        pos_top_20[word] = counts  # top 20 단어, 가격
-    
-    wordcloud = WordCloud(font_path='C:/Windows/Fonts/NanumGothic.ttf',
-                        background_color='white',
-                        colormap="OrRd",
-                        width = 500, height = 500, margin = 10, prefer_horizontal = True).generate_from_frequencies(pos_top_20)
-    plt.figure(figsize=(15, 15))
-    plt.imshow(wordcloud)
-    plt.axis("off")
-    plt.savefig('C:/Users/parkh/OneDrive/바탕 화면/한라/static/image/positive_wordcloud.png')
+    good_top = {}
+    bad_top = {}
 
-    # =========================================== 부정 리뷰 명사 추출 ==============================================================
-    neg_comment_nouns = []
-    for cmt in negative_reviews['review']:
-        neg_comment_nouns.extend(okt.nouns(cmt)) 
+    for word, counts in good_count.most_common(max):
+        good_top[word] = counts 
 
-    neg_comment_nouns2 = []
-    word = [w for w in neg_comment_nouns if len(w) > 1]  
-    neg_comment_nouns2.extend(word)  
-        
-    #-- 단어 빈도 계산
-    neg_word_count = Counter(neg_comment_nouns2)
+    for word, counts in bad_count.most_common(max):
+        bad_top[word] = counts  
 
-    #-- 빈도수가 많은 상위 단어 추출
-    max = 100
-    neg_top_20 = {}
-   
-    for word, counts in neg_word_count.most_common(max):
-        neg_top_20[word] = counts
+    # 긍정 워드 클라우드
+    alice_coloring = np.array(Image.open('static/image/cloud_image.png'))
+    stopwords = set(STOPWORDS)
+    stopwords.add("said")
 
-    wordcloud = WordCloud(font_path='C:/Windows/Fonts/NanumGothic.ttf',
-                        background_color='white',
-                        colormap="PuRd",
-                        width = 500, height = 500, margin = 10, prefer_horizontal = True).generate_from_frequencies(neg_top_20)
-    plt.figure(figsize=(15, 15))
-    plt.imshow(wordcloud)
-    plt.axis("off")
-    plt.savefig('C:/Users/parkh/OneDrive/바탕 화면/한라/static/image/negative_wordcloud.png')
+    wc = WordCloud(font_path = 'font/BinggraeⅡ-Bold.ttf', background_color='white',colormap = "YlOrRd",mask=alice_coloring,width=1500, height=1500)
+    wc.generate_from_frequencies(good_top)
+
+    plt.imshow(wc)
+    figure = plt.gcf() 
+    figure.set_size_inches(15, 15)
+    plt.axis('off') 
+    plt.savefig('static/image/pos_wordcloud.png', bbox_inches='tight')
+
+    # 부정 워드 클라우드
+    alice_coloring = np.array(Image.open('static/image/cloud_image.png'))
+    stopwords = set(STOPWORDS)
+    stopwords.add("said")
+
+    wc = WordCloud(font_path = 'font/BinggraeⅡ-Bold.ttf', background_color='white',colormap = "plasma",mask=alice_coloring,width=1500, height=1500)
+    wc.generate_from_frequencies(bad_top) 
+
+    plt.imshow(wc)
+    figure = plt.gcf() 
+    figure.set_size_inches(15, 15)
+    plt.axis('off') 
+    plt.savefig('static/image/neg_wordcloud.png', bbox_inches='tight')
+
+    # 도넛 차트
+    donut(neg_per, pos_per)
+
+    # 바 차트
+    bar(five_count, four_count, three_count, two_count, one_count, zero_count)
 
     return redirect(url_for('main'))
-    # kkma = Kkma()
 
-    # df=pd.read_csv("C:/Users/parkh/OneDrive/바탕 화면/한라/danawa.csv")
-    # del df["Unnamed: 0"]
-
-    # article_list=[]
-
-    # for i in range(10):
-    #     article_list.append(df.loc[i,'review'])
-
-    # kkma.pos(article_list[0])
-
-    # pos_list = ["NNG", "NNP"]
-    # tag_sentence_list = []
-
-    # now = 0
-    # for article in article_list:
-    #     now += 1
-    #     print(now, end="\r")
-    #     sentence_list = kkma.sentences(article)
-    #     tag_sentence = []
-    #     for sentence in sentence_list:
-    #         tag_list = kkma.pos(sentence)
-    #         for word, pos in tag_list:
-    #             if pos in pos_list and word and len(word) > 1:
-    #                 tag_sentence.append(word)
-    #     tag_sentence_list.append(tag_sentence)
-
-    # word_frequency = {}
-
-    # for tag_sentence in tag_sentence_list:
-    #     for word in tag_sentence:
-    #         if word in word_frequency.keys():
-    #             word_frequency[word] += 1
-    #         else:
-    #             word_frequency[word] = 1
-
-    # word_count = []
-    # for word, freq in word_frequency.items():
-    #     word_count.append([word, freq])
-    # word_count.sort(key=lambda elem: elem[1], reverse=True)
-
-    # for word, freq in word_count[:20]:
-    #     print(word + "\t" + str(freq))
-        
-    # noun_string = ""
-
-    # for tag_sentence in tag_sentence_list:
-
-    #     import random
-    #     random.shuffle(tag_sentence)
-    #     for word in tag_sentence:
-    #         noun_string += word + " "
-
-    # noun_string = noun_string.strip()
-
-    # font_path='C:/Windows/Fonts/NanumGothic.ttf'  
-    # background_color="white"      
-    # margin=10                     
-    # min_font_size=10              
-    # max_font_size=150             
-    # width=500                     
-    # height=500                   
-    # wc = WordCloud(font_path=font_path, background_color=background_color, \
-    #             margin=margin, min_font_size=min_font_size, \
-    #             max_font_size=max_font_size, width=width, height=height, prefer_horizontal = True)
-
-    # wc.generate(noun_string)
-
-
-    # plt.figure(figsize=(15, 15))
-    # plt.imshow(wc, interpolation="bilinear")
-    # plt.axis("off")
-    # plt.savefig('C:/Users/parkh/OneDrive/바탕 화면/한라/static/image/wordcloud.png')
-    # #plt.show()  
-
-    # return redirect(url_for('main')) # 작업이 끝나면 main 으로 라우팅
-
-
+    
 # ============================================================== 리뷰, 워드클라우드 등 결과 표시 페이지 ================================================================================
 @app.route('/main', methods=['GET', 'POST'])
 def main():
@@ -589,7 +584,7 @@ def main():
 
     # 긍정 리뷰 top 3개
     pos_review = []
-    for i in pos_review_list[:3]:
+    for i in good_text[:3]:
         positive_review ={
             'review' : i["review"],
             'name' : i["name"],
@@ -600,7 +595,7 @@ def main():
 
     # 부정 리뷰 top 3개
     neg_review = []
-    for i in neg_review_list[:3]:
+    for i in bad_text[:3]:
         negative_review ={
             'review' : i["review"],
             'name' : i["name"],
@@ -613,18 +608,21 @@ def main():
                             shoplink = plink, 
                             product_data = product_info,
                             pos_review = pos_review,
-                            neg_review = neg_review)
+                            neg_review = neg_review,
+                            good_text=good_text,
+                            bad_text=bad_text,
+                            suggest_list = suggest_list)
 
 # ============================================================== 리뷰 보기 버튼 클릭 시 분석한 리뷰를 보여주기 위한 페이지 (전체 리뷰)==============================================================   
 def get_users(offset=0, per_page=10): # 전체
-    return review_list[offset: offset + per_page]
+    return label_review[offset: offset + per_page]
 
 @app.route('/review', methods=['GET', 'POST'])
 def review():
 
     page, per_page, offset = get_page_args(page_parameter='page',
                                            per_page_parameter='per_page')
-    total = len(review_list)
+    total = len(label_review)
     pagination_users = get_users(offset=offset, per_page=per_page)
     pagination = Pagination(page=page, per_page=per_page, total=total,
                             css_framework='bootstrap4')
@@ -803,8 +801,217 @@ def five():
                             per_page=per_page,
                             pagination=pagination,
                             review_count = five_count)
+# ======================================================================================= 모델 ========================================================================================================
+
+def convert_data(X_data,MAX_SEQ_LEN,tokenizer):
+    # BERT 입력으로 들어가는 token, mask, segment, target 저장용 리스트
+    tokens, masks, segments, targets = [], [], [], []
+    
+    for X in (X_data):
+        # token: 입력 문장 토큰화
+        token = tokenizer.encode(X, truncation = True, padding = 'max_length', max_length = MAX_SEQ_LEN)
+        
+        # Mask: 토큰화한 문장 내 패딩이 아닌 경우 1, 패딩인 경우 0으로 초기화
+        num_zeros = token.count(0)
+        mask = [1] * (MAX_SEQ_LEN - num_zeros) + [0] * num_zeros
+        
+        # segment: 문장 전후관계 구분: 오직 한 문장이므로 모두 0으로 초기화
+        segment = [0]*MAX_SEQ_LEN
+
+        tokens.append(token)
+        masks.append(mask)
+        segments.append(segment)
+
+    # numpy array로 저장
+    tokens = np.array(tokens)
+    masks = np.array(masks)
+    segments = np.array(segments)
+  
+    return [tokens, masks, segments]
 
 
+# 최고 성능의 모델 불러오기
+def get_title_score2():
+    import warnings
+    warnings.filterwarnings('ignore')
+
+    from pathlib import Path
+    BASE_DIR = Path(__file__).resolve().parent
+    df = pd.read_csv(BASE_DIR/'danawa.csv')
+    # df = df.drop('Unnamed: 0',axis= 1)
+
+    df['review'] = df['review'].str.replace("[^ㄱ-ㅎㅏ-ㅣ가-힣 ]","")
+    df['review'].nunique()
+    df.drop_duplicates(subset=['review'], inplace=True)
+
+    X_data = df['review']
+    MAX_SEQ_LEN = 80
+    tokenizer = BertTokenizer.from_pretrained('klue/bert-base')
+
+    # train 데이터를 Bert의 Input 타입에 맞게 변환
+
+    train_x= convert_data(X_data,MAX_SEQ_LEN,tokenizer)
+
+    # print(train_x)
+    predicted_value = model.predict(train_x)
+    predicted_label = np.argmax(predicted_value, axis = 1)
+
+    global label_review
+
+    data = {
+        'review':df['review'],
+        'mall_logo':df['mall_logo'],
+        'date':df['date'],
+        'name':df['name'],
+        'star_score':df['star_score'],
+        'label':predicted_label
+    }
+
+    df_final = pd.DataFrame(data)
+    df_final.to_csv(BASE_DIR/'danawa_label.csv',encoding='CP949')
+
+    label_review = df_final.to_dict('records') # df를 딕셔너리 변환해서 사용
+
+    # 긍부정 단어 퍼센트
+    global pos_per, neg_per
+    total = df_final['label'].count()
+    pos_count = df_final[df_final['label']==1].label.count() 
+    neg_count = df_final[df_final['label']==0].label.count() 
+
+    pos_per = round((pos_count / total)*100, 2)
+    neg_per = round((neg_count / total)*100, 2)
+
+    # 별점 별 개수
+    global five_count, four_count, three_count, two_count, one_count, zero_count
+    five_count = df_final[df_final['star_score']==100].star_score.count() 
+    four_count = df_final[df_final['star_score']==80].star_score.count() 
+    three_count = df_final[df_final['star_score']==60].star_score.count() 
+    two_count = df_final[df_final['star_score']==40].star_score.count() 
+    one_count = df_final[df_final['star_score']==20].star_score.count() 
+    zero_count = df_final[df_final['star_score']==0].star_score.count() 
+
+    # 긍정, 부정 리뷰 리스트로 분리
+    global good_text, bad_text
+    good_text=[]
+    bad_text=[]
+    for i in range(len(df_final)):
+        if df_final.loc[i,'label']==1:
+            good = {
+                'review':df_final.loc[i,'review'],
+                'mall_logo':df_final.loc[i,'mall_logo'],
+                'date':df_final.loc[i,'date'],
+                'name':df_final.loc[i,'name'],
+                'star_score':df_final.loc[i,'star_score'],
+                'label':df_final.loc[i,'label']
+            }
+            good_text.append(good)
+        else:
+            bad = {
+                'review':df_final.loc[i,'review'],
+                'mall_logo':df_final.loc[i,'mall_logo'],
+                'date':df_final.loc[i,'date'],
+                'name':df_final.loc[i,'name'],
+                'star_score':df_final.loc[i,'star_score'],
+                'label':df_final.loc[i,'label']
+            }
+            bad_text.append(bad)
+
+# ======================================================================================= 도넛차트 ========================================================================================================
+def donut(pos, neg):
+    labels = ['부정 리뷰', '긍정 리뷰']
+    colors = ['#ff9999','#8fd9b6']
+    frequency = [neg, pos]
+    wedgeprops={'width': 0.5}
+    explode = [0.05, 0.00]
+
+    fig = plt.figure(figsize=(8,8)) 
+    fig.set_facecolor('white') 
+    ax = fig.add_subplot() 
+
+    pie = ax.pie(frequency, 
+                    startangle=180, 
+                    counterclock=False,
+                    wedgeprops=wedgeprops,
+                    colors=colors,
+                    labels=labels,
+                    explode=explode,
+                    shadow = True,
+                )
+
+    total = np.sum(frequency) ## 빈도수 총합
+
+    sum_pct = 0 ## 백분율 초기값
+    for i,l in enumerate(labels):
+        ang1, ang2 = pie[0][i].theta1, pie[0][i].theta2 ## 각1, 각2
+        r = pie[0][i].r ## 원의 반지름
+
+        x = ((r+0.5)/2)*np.cos(np.pi/180*((ang1+ang2)/2)) ## 정중앙 x좌표
+        y = ((r+0.5)/2)*np.sin(np.pi/180*((ang1+ang2)/2)) ## 정중앙 y좌표
+
+        if i < len(labels) - 1:
+            sum_pct += float(f'{frequency[i]/total*100:.2f}') ## 백분율을 누적한다.
+            ax.text(x,y,f'{frequency[i]/total*100:.2f}%',ha='center',va='center') ## 백분율 텍스트 표시
+        else: ## 총합을 100으로 맞추기위해 마지막 백분율은 100에서 백분율 누적값을 빼준다.
+            ax.text(x,y,f'{100-sum_pct:.2f}%',ha='center',va='center') 
+
+    
+    plt.legend(pie[0],labels) ## 범례 표시
+    plt.rcParams['font.size'] = 15
+    plt.savefig('static/image/donut_chart.png', bbox_inches='tight')
+
+# ======================================================================================= 바 차트 ========================================================================================================
+def bar(five, four, three, two, one, zero):
+    x = [5, 4, 3, 2, 1, 0]
+    y = [five, four, three, two, one, zero]
+
+    colors = sns.color_palette('hls',len(y)) # 색상
+    plt.figure(figsize=(10,8))
+    plt.bar(x, y, width=0.7, color=colors, edgecolor='black')
+    plt.xlabel('별점', fontweight = "bold", fontsize=18)
+    plt.ylabel('리뷰 개수', fontweight = "bold", fontsize=18)
+
+    for i, v in enumerate(x):
+        plt.text(v, y[i], str(y[i]),
+                fontsize=18,
+                color="black",
+                fontweight = "bold",
+                horizontalalignment='center',
+                verticalalignment='bottom')
+
+    plt.savefig('static/image/bar_chart.png', bbox_inches='tight')
+
+# ====================================================================== 제조사 + 카테고리 검색 ==========================================================================
+def sug(company, category):
+    url =  "http://search.danawa.com/dsearch.php?query=" + company + category
+    headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36'}
+    res = requests.get(url, headers=headers)
+    res.raise_for_status()
+    soup = BeautifulSoup(res.text, 'html.parser') #가져온 문서를 html 객체로 만듦
+    global suggest_list
+    suggest_list = []
+
+    # li 태그 중에서 클래스가 prod_item으로 시작하는 모든 값
+    items2 = soup.find_all('li', attrs={'id':re.compile('^productItem')}) 
+
+    for item in items2[:5]:
+        name = item.find('p', attrs={'class':'prod_name'}).a.get_text().strip() # 제품명
+        price = item.find('p', attrs={'class':'price_sect'}).a.strong.get_text() # 가격
+        link = item.find('p', attrs={'class':'prod_name'}).a['href'] # 링크
+        imgs = item.select_one('.thumb_image > a > img').get("data-src") # 사진1
+        if imgs == None:
+            imgs = item.select_one('.thumb_image > a > img').get('data-original') # 사진2
+            if imgs == None:
+                imgs = item.select_one('.thumb_image > a > img').get("src") # 사진3
+
+        suggest_lists = {
+            'name' : name,
+            'price' : price,
+            'link' : link,
+            'img' : imgs,
+        }
+        suggest_list.append(suggest_lists) 
+
+plt.show()
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True, processes=20, use_reloader=False)
+    app.run()
 

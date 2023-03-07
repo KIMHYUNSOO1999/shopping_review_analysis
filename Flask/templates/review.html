@@ -8,7 +8,7 @@
     
 
     
-    <title>Review</title>
+    <title>Shopping_cart - Review</title>
   </head>
   <body>
     <div class="top">
@@ -108,18 +108,23 @@
             <span class="bar">
               ㅣ
             </span>
-            <span class="positive">            <!-- 각 리뷰에 대한 긍정 단어, 부정 단어의 비율을 나타내고싶음... 임시로 아무값이나 넣음 -->
-              긍정
-              <span class="positive-per">
-                80%
+            {% set label = data['label'] %}
+            {% if label == 1 %}
+              <span class="positive">           
+                긍정
               </span>
-            </span>
-            <span class="negative">
+            {% else %}
+              <span class="negative">         
+                부정
+              </span>
+            {% endif %}
+
+            <!-- <span class="negative">
               부정
               <span class="negative-per">
                 20%
               </span>
-            </span>
+            </span> -->
           </div>
           <div class="text">
             {{ data['review'] }}    <!-- 리뷰 내용 (3줄까지, 이후 생략(...) )-->
