@@ -2,17 +2,12 @@
   box-sizing: border-box;
 }
  
-/* logo */
-.logo{
-  width: 53px;
-  height: 53px;
-}
 
 body {
   margin: 0;
   min-width: 992px;
   font-family: "Helvetica";
-  padding-top: 60px;
+  padding-top: 50px;
 }
  
 /* navbar */
@@ -33,6 +28,8 @@ body {
 }
 .navbar #logo img{
   vertical-align: middle;
+  width: 53px;
+  height: 53px;
 }
  
 .navbar #menu {
