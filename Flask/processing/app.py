@@ -315,7 +315,8 @@ def page(pagename, name):
 
     # 선택한 제품보다 +- 50000원 
     price_sort =  sug_df[ ( (sug_df['second_price'] >= price_int - 50000) & (sug_df['second_price'] <= price_int + 50000) ) ]
-    price_sort_df = price_sort.sort_values(by='second_price')
+    # price_sort_df = price_sort.sort_values(by='second_price')
+    price_sort_df = price_sort.sort_index()
 
     # +- 50000원 인 제품 데이터프레임 딕셔너리로 변환
     global recommended_product_list

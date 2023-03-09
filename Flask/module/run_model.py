@@ -40,7 +40,7 @@ def get_title_score2():
   warnings.filterwarnings('ignore')
 
   from pathlib import Path
-  BASE_DIR = Path(__file__).resolve().parent
+  BASE_DIR = Path(__file__).resolve().parent.parent
   df = pd.read_csv(BASE_DIR/'danawa.csv')
   # df = df.drop('Unnamed: 0',axis= 1)
 
