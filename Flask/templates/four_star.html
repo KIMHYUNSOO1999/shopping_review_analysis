@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link href="{{ url_for('static', filename='css/review_style.css') }}" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
     
 
     
@@ -112,8 +113,12 @@
               ㅣ
             </span>
           </div>
-          <div class="text">
-            {{ data['review'] }}    <!-- 리뷰 내용 (3줄까지, 이후 생략(...) )-->
+          <div>
+            <div class="text">
+              {{ data['review'] }}   <!-- 리뷰 내용 (3줄까지, 이후 생략(...) )-->
+            </div>
+            <a class="more"><span>▶</span>더보기</a>
+            <a class="hide"><span>▲</span>접기</a> 
           </div>
         </div>
         
@@ -123,4 +128,16 @@
       </div>
     </div>   
   </body>
+  <script>
+    $(".more").click(function(){
+      $(this).hide();
+      $(this).siblings(".hide").show();
+      $(this).siblings(".text").css({'-webkit-line-clamp':'50'});
+    })
+    $(".hide").click(function(){
+      $(this).siblings(".more").show();
+      $(this).hide();
+      $(this).siblings(".text").css({'-webkit-line-clamp':'3'});
+    })
+  </script>
 </html>

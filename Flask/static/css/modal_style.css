@@ -402,6 +402,7 @@ body {
   color: #555;
   margin-top: 30px;
   margin-left: 30px;
+  margin-bottom: 8px;
 }
 
 .top{
@@ -605,4 +606,31 @@ body {
 
 .sug-price{
   font-size: 18px;
+}
+
+.more-review{
+  margin-left: 30px;
+  cursor: pointer;
+  display: block;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.hide-review{
+  margin-left: 30px;
+  cursor: pointer;
+  display: none;
+  font-weight: bold;
+}
+
+.more-review span{
+  position: relative;
+  bottom: 1px;
+  margin-right: 5px;
+}
+
+.hide-review span{
+  position: relative;
+  bottom: 1px;
+  margin-right: 5px;
 }

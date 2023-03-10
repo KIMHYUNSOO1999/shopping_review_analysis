@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, url_for, redirect, session, f
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import time
 
 from flask_paginate import Pagination, get_page_args
 import os
@@ -190,7 +191,7 @@ def login():
         cursor.execute('SELECT * FROM user WHERE user_id = %s', [user_id])
         account = cursor.fetchone()
         if account:
-            origin_password = bytes.fromhex(account['user_password']) # 기존 저장된 값을 비교하기 위해 hex에서 byte로 
+            origin_password = bytes.fromhex(account['user_passwd']) # 기존 저장된 값을 비교하기 위해 hex에서 byte로 
         
             check = bcrypt.checkpw(user_password, origin_password) # 입력한 비밀번호와 저장된 비밀번호 체크
 
@@ -240,7 +241,7 @@ def signup():
             return render_template('signup.html')
 
         else: # 아니면 회원가입 완료.  회원가입 완료 알람 수정 필요
-            sql = 'INSERT INTO user (user_id, user_password, user_email, user_nickname) VALUES (%s, %s, %s, %s)'
+            sql = 'INSERT INTO user (user_id, user_passwd, user_email, user_nickname) VALUES (%s, %s, %s, %s)'
             cursor.execute(sql, (user_id, hash_password, user_email, user_nickname))
 
             db.commit()
@@ -281,22 +282,22 @@ def page(pagename, name):
 
     product_name = name
    
-    #링크 가져오기 
+    #링크 가져오기 1
     global value
     value = get_link.get_link(product_name)
     
-    # 리뷰 크롤링
+    # 리뷰 크롤링 2
     global review_list, count
     review_list, count = review_Crawl.Crawl(value)
 
     product_link = value + "#bookmark_cm_opinion" # 리뷰를 크롤링 링크, 제품 정보 링크
 
-    # 클릭한 제품 이름, 사진, 가격, 세부 내용
+    # 클릭한 제품 이름, 사진, 가격, 세부 내용 3
     
     global product_data, pimg, pname, p_price, petc
     product_data, pimg, pname, p_price, petc = get_product_info.get_product_info(product_link)
 
-    # 제조사, 카테고리 관련 제품 추천
+    # 제조사, 카테고리 관련 제품 추천 4 
     df_prod = pd.DataFrame(product_data)   
 
     etc_prod = df_prod['etc'][0]
@@ -326,7 +327,7 @@ def page(pagename, name):
     # 텍스트 긍부정 라벨 
     global good_text, bad_text, label_review
     good_text, bad_text, pos_per, neg_per, label_review, five_count, four_count, three_count, two_count, one_count, zero_count = run_model.get_title_score2()
-
+    
     #워드클라우드
     get_wordcloud.wordcloud()
 

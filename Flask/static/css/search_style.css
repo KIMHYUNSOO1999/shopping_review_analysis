@@ -173,7 +173,7 @@ a{
   float: right;
   /* position: relative; */
   margin-top: 12px;
-  /* margin-left: 16px; */
+  margin-left: -5px;
   text-decoration: none;
   color: white;
   margin-right: 15px;

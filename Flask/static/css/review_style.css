@@ -67,17 +67,16 @@ body{
 
 .text{
   line-height: 22px;
-  max-height: 104px;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   line-height: 1.7;
-  overflow: hidden;
   color: #555;
   margin-top: 30px;
   margin-left: 30px;
+  margin-bottom: 8px;
 }
 
 .top{
@@ -202,4 +201,31 @@ body{
 }
 .none{
   text-align: center;
+}
+
+.more{
+  margin-left: 30px;
+  cursor: pointer;
+  display: block;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.hide{
+  margin-left: 30px;
+  cursor: pointer;
+  display: none;
+  font-weight: bold;
+}
+
+.more span{
+  position: relative;
+  bottom: 1px;
+  margin-right: 5px;
+}
+
+.hide span{
+  position: relative;
+  bottom: 1px;
+  margin-right: 5px;
 }

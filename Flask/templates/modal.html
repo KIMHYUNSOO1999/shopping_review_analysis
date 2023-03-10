@@ -219,8 +219,12 @@
                 </span>
               {% endif %}
             </div>
-            <div class="text">
-              {{ text['review'] }}
+            <div>
+              <div class="text">
+                {{ text['review'] }}   <!-- 리뷰 내용 (3줄까지, 이후 생략(...) )-->
+              </div>
+              <a class="more-review"><span>▶</span>더보기</a>
+              <a class="hide-review"><span>▲</span>접기</a> 
             </div>
           </div>
         {% endfor %}
@@ -314,8 +318,12 @@
                 </span>
               {% endif %}
             </div>
-            <div class="text">
-              {{ text['review'] }}
+            <div>
+              <div class="text">
+                {{ text['review'] }}   <!-- 리뷰 내용 (3줄까지, 이후 생략(...) )-->
+              </div>
+              <a class="more-review"><span>▶</span>더보기</a>
+              <a class="hide-review"><span>▲</span>접기</a> 
             </div>
           </div>
         {% endfor %}
@@ -357,6 +365,17 @@
     document.querySelector('.neg-modal-background').style.display = 'none'; //리뷰 창 숨기기
     document.body.style.overflow = "auto"; // 외부 스크롤 활성화
   };
+
+  $(".more-review").click(function(){
+    $(this).hide();
+    $(this).siblings(".hide-review").show();
+    $(this).siblings(".text").css({'-webkit-line-clamp':'50'});
+  })
+  $(".hide-review").click(function(){
+    $(this).siblings(".more-review").show();
+    $(this).hide();
+    $(this).siblings(".text").css({'-webkit-line-clamp':'3'});
+  })
 
 </script>
 
