@@ -332,10 +332,12 @@ def page(pagename, name):
     get_wordcloud.wordcloud()
 
     # 도넛 차트
-    donut.donut(neg_per, pos_per)
+    global donut_per
+    donut_per = donut.donut(pos_per, neg_per)
 
     # 바 차트
-    bar.bar(five_count, four_count, three_count, two_count, one_count, zero_count)
+    global bar_cnt
+    bar_cnt = bar.bar(five_count, four_count, three_count, two_count, one_count, zero_count)
 
     return redirect(url_for('main'))
 
@@ -349,6 +351,9 @@ def main():
 
     pos_review, neg_review = text_rank.text_rank(good_text, bad_text)
 
+    bar_count = []
+    bar_count.append(bar_cnt)
+
     return render_template('modal.html',                          
                             shoplink = plink, 
                             product_data = product_info,
@@ -356,7 +361,9 @@ def main():
                             neg_review = neg_review,
                             good_text=good_text,
                             bad_text=bad_text,
-                            suggest_list = recommended_product_list)
+                            suggest_list = recommended_product_list,
+                            bar_count = bar_cnt,
+                            donut_per = donut_per)
 
 # 전체 리뷰 페이지
 def get_users(offset=0, per_page=10): # 전체

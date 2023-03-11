@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Shopping_cart - Product</title>
   <link href="{{ url_for('static', filename='css/modal_style.css') }}" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
   <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -62,12 +63,12 @@
   <div style="text-align: center;">
     <div class="product_info">
 
-      <div class="chart1">
-        <img src="{{ url_for('static', filename='image/donut_chart.png') }}" class="donut-chart">
+      <div class="chart1">      
+        <canvas id="donut_chart" height="420px" width="420px"></canvas>
       </div>
 
       <div class="chart2">
-        <img src="{{ url_for('static', filename='image/bar_chart.png') }}" class="donut-chart">
+        <canvas id="bar_chart" height="500px" width="480px"></canvas>
       </div>
       
       <fieldset class="review">
@@ -376,7 +377,117 @@
     $(this).hide();
     $(this).siblings(".text").css({'-webkit-line-clamp':'3'});
   })
+  // 바 차트
+  var ctx = document.getElementById('bar_chart').getContext('2d');
+  var zero = '{{ bar_count.zero }}';
+  var one = '{{ bar_count.one }}';
+  var two = '{{ bar_count.two }}';
+  var three = '{{ bar_count.three }}';
+  var four = '{{ bar_count.four }}';
+  var five = '{{ bar_count.five }}';
+      var chart = new Chart(ctx, {
+          // The type of chart we want to create
+          type: 'bar',
 
+          // The data for our dataset
+          data: {
+              labels: ['0점', '1점', '2점', '3점', '4점', '5점'],
+              datasets: [{
+                  label: '쇼핑몰 별점 별 리뷰 갯수',
+                  backgroundColor: [
+                      'rgba(255, 99, 132, 0.5)',
+                      'rgba(255, 99, 132, 0.5)',
+                      'rgba(255, 99, 132, 0.5)',
+                      'rgba(75, 192, 192, 0.5)',
+                      'rgba(75, 192, 192, 0.5)',
+                      'rgba(75, 192, 192, 0.5)'
+                    ],
+                  borderColor: [
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(255, 99, 132, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(75, 192, 192, 1)'
+                    ],
+                  data: [zero, one, two, three, four, five]
+              }]
+          },
+
+          // Configuration options go here
+          options: {
+              title: {
+                  display: true,
+                  fontSize: 30,
+                  fontColor: 'rgba(46, 49, 49, 1)'
+              },
+              legend: {
+                  labels: {
+                      fontColor: 'rgba(83, 51, 237, 1)',
+                      fontSize: 15
+                  }
+              },
+              scales: {
+                  xAxes: [{
+                      ticks: {
+                          fontColor: 'rgba(27, 163, 156, 1)',
+                          fontSize: '15'
+                      }
+                  }],
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero: true,
+                          fontColor: 'rgba(246, 36, 89, 1)',
+                          fontSize: '15'
+                      }
+                  }]
+              },
+              responsive:false,
+              
+          }
+      });
+
+      var ctx = document.getElementById("donut_chart");
+      var pos = '{{ donut_per.pos }}'
+      var neg = '{{ donut_per.neg }}'
+      var myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['긍정 ' + pos + '%', '부정 ' + neg + '%'],
+          datasets: [{
+            label: '# of Tomatoes',
+            data: [pos, neg],
+            backgroundColor: [
+              'rgba(75, 192, 192, 0.5)',
+              'rgba(255, 99, 132, 0.7)'
+            ],
+            borderColor: [
+              'rgba(75, 192, 192, 1)',      
+              'rgba(255,99,132,1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          //cutoutPercentage: 40,
+          responsive: false,
+          legend:{
+            labels:{
+              fontStyle:'bold',
+              fontSize:15,
+            }
+          },
+          tooltips: {
+            callbacks: {
+              label: function(tooltipItem, data) {
+                var label = data.labels[tooltipItem.index];
+                return label;
+              }
+            }
+          }
+
+        }
+      });
 </script>
 
 </html>

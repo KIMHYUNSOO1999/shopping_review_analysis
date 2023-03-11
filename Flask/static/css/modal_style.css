@@ -525,6 +525,9 @@ body {
   border: 3px solid #F2F2E2;
   border-radius: 10px;
   display: inline-block;
+  position: relative;
+  top: 30px;
+  
 }
 .chart2{
   width: 500px;
@@ -534,6 +537,7 @@ body {
   margin-top: 60px;
   margin-right: 100px;
   display: inline-block;
+  position: relative;
 }
 
 .chart1 img{
@@ -634,3 +638,12 @@ body {
   bottom: 1px;
   margin-right: 5px;
 }
+
+.chart2 canvas{
+  position: relative;
+  bottom: 50px;
+}
+.chart1 canvas{
+  margin: 0 auto;
+}
+
