@@ -220,13 +220,13 @@ def Processing_Mecab(df):
 
     for i in range(len(good_text)):
         try:
-            good_morphs.append(okt.pos(good_text[i]))
+            good_morphs.append(mecab.pos(good_text[i]))
         except UnicodeDecodeError:
             pass
 
     for i in range(len(bad_text)):
         try:
-            bad_morphs.append(okt.pos(bad_text[i]))
+            bad_morphs.append(mecab.pos(bad_text[i]))
         except UnicodeDecodeError:
             pass
 
