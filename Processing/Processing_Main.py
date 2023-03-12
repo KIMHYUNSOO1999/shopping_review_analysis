@@ -13,7 +13,7 @@ import matplotlib
 from IPython.display import set_matplotlib_formats 
 from konlpy.tag import Okt,Mecab
 from textrank import KeysentenceSummarizer
-
+import ayncio
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -180,7 +180,7 @@ def Processing_OKT(df):
     print("워드클라우드 종료")
     
     
-def Processing_Mecab(df):  
+async def Processing_Mecab(df):  
 
     good_text=[]
     bad_text=[]
@@ -296,7 +296,7 @@ def Mecab_tokenizer(sent):
     
     return words
 
-def Processing_TextRank(df):
+async def Processing_TextRank(df):
 
     df=df.dropna(axis=0)
 
@@ -337,7 +337,30 @@ def Processing_TextRank(df):
     
     return keysents_good,keysents_bad
 
-def Prcessing_main():
+# def Prcessing_main():
+    
+#     df=pd.read_csv('/content/drive/MyDrive/halla/danawa2.csv')
+#     df=df.dropna(axis=0)
+
+#     start_time = time.time()
+
+#     df_one=Processing_classification(df)
+#     # Processing_OKT(df_one)
+#     Processing_Mecab(df_one)
+#     Top3_good,Top3_bad=Processing_TextRank(df_one)
+
+#     end_time = time.time()
+
+#     print(end_time-start_time)
+
+async def Processing_async(df):
+
+    await Processing_Mecab(df)
+    Top3_good,Top3_bad=  await Processing_TextRank(df)
+
+    return Top3_good,Top3_bad
+
+def Prcessing_main2():
     
     df=pd.read_csv('/content/drive/MyDrive/halla/danawa2.csv')
     df=df.dropna(axis=0)
@@ -345,12 +368,11 @@ def Prcessing_main():
     start_time = time.time()
 
     df_one=Processing_classification(df)
-    # Processing_OKT(df_one)
-    Processing_Mecab(df_one)
-    Top3_good,Top3_bad=Processing_TextRank(df_one)
+
+    Top3_good,Top3_bad=asyncio.run(Processing_async(df_one))
 
     end_time = time.time()
 
     print(end_time-start_time)
 
-Prcoessing_main()
+Prcessing_main2()
