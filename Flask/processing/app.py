@@ -19,13 +19,13 @@ from module import search # 제품 검색
 from module import get_link # 제품 링크 얻기
 from module import review_Crawl # 리뷰 크롤링
 from module import get_product_info # 선택한 제품 정보 가져오기
-from module import get_wordcloud
-from module import text_rank
-from module import run_model
-from module import load_model
-from module import donut
-from module import bar
-from module import Recommended_Product
+from module import run_model # 모델 수행
+from module import load_model # 모델 로드
+from module import donut # 도넛 차트
+from module import bar # 바 차트
+from module import Recommended_Product # 제품 추천
+from module import mecab_wordcloud # MeCab워드클라우드
+from module import rank2 # textrank
 
 tf.keras.optimizers.RectifiedAdam = RectifiedAdam
 
@@ -324,12 +324,21 @@ def page(pagename, name):
     range_price_item = price_sort_df.to_dict('records')
     recommended_product_list = range_price_item[:5] # 5개
 
+
     # 텍스트 긍부정 라벨 
     global good_text, bad_text, label_review
-    good_text, bad_text, pos_per, neg_per, label_review, five_count, four_count, three_count, two_count, one_count, zero_count = run_model.get_title_score2()
+    good_text, bad_text, pos_per, neg_per, label_review, five_count, four_count, three_count, two_count, one_count, zero_count, df_one = run_model.get_title_score2()
     
     #워드클라우드
-    get_wordcloud.wordcloud()
+    # get_wordcloud.wordcloud()
+
+    mecab_wordcloud.Processing_Mecab()
+
+
+    # df=pd.read_csv('danawa_label.csv', encoding='cp949') 
+    # df=df.dropna(axis=0)
+    global Top3_good, Top3_bad
+    Top3_good, Top3_bad = rank2.Processing_TextRank(df_one)
 
     # 도넛 차트
     global donut_per
@@ -349,21 +358,46 @@ def main():
     plink = value
     product_info = product_data
 
-    pos_review, neg_review = text_rank.text_rank(good_text, bad_text)
+    # pos_review, neg_review = text_rank.text_rank(good_text, bad_text)
 
     bar_count = []
     bar_count.append(bar_cnt)
 
+    # 긍정 Top 3
+    pos_top_3= pd.DataFrame(Top3_good)
+    Positive_Top_3_review = []
+    for i in range(len(pos_top_3)):
+        good_top = {
+        'grade':i+1,
+        'score':round(pos_top_3.loc[i,1], 2),
+        'review':pos_top_3.loc[i,2],
+        }
+        Positive_Top_3_review.append(good_top)
+
+    
+    # 부정 Top 3
+    neg_top_3= pd.DataFrame(Top3_bad)
+    Negative_Top_3_review = []
+    for i in range(len(neg_top_3)):
+        good_top = {
+        'grade':i+1,
+        'score':round(neg_top_3.loc[i,1], 2),
+        'review':neg_top_3.loc[i,2],
+        }
+        Negative_Top_3_review.append(good_top)
+
     return render_template('modal.html',                          
                             shoplink = plink, 
                             product_data = product_info,
-                            pos_review = pos_review,
-                            neg_review = neg_review,
+                            # pos_review = pos_review,
+                            # neg_review = neg_review,
                             good_text=good_text,
                             bad_text=bad_text,
                             suggest_list = recommended_product_list,
                             bar_count = bar_cnt,
-                            donut_per = donut_per)
+                            donut_per = donut_per,
+                            Positive_Top_3_review = Positive_Top_3_review,
+                            Negative_Top_3_review = Negative_Top_3_review)
 
 # 전체 리뷰 페이지
 def get_users(offset=0, per_page=10): # 전체
@@ -554,7 +588,7 @@ def five():
                             review_count = five_count)
 
 
-plt.show()
+
 if __name__ == '__main__':
     app.run()
 

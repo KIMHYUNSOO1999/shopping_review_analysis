@@ -233,9 +233,12 @@ body {
   border-radius: 10px;
   display: inline-block;
   text-align: left;
+  position: relative;
+  bottom: 8px;
   /* color: #F2F2E2; */
   /* text-shadow:2px 2px 2px #000; */
 }
+
 
 .review legend{
   font-size: 25px;
@@ -243,6 +246,11 @@ body {
   font-family: 'Do Hyeon', sans-serif;
   padding-left: 20px;
   padding-right: 10px;
+  margin-bottom: 8px;
+}
+
+.top3{
+  font-size: 20px;
 }
 
 .pos{
@@ -391,7 +399,6 @@ body {
 
 .text{
   line-height: 22px;
-  max-height: 104px;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -427,11 +434,23 @@ body {
   top: 2px;
 }
 
-.name{
+.grade{
   position: relative;
   top: -1px;
-  font-size: 15px;
+  font-size: 20px;
   margin-right: 5px;
+  margin-right: 5px;
+  font-weight: bold;
+}
+
+.pos-info span a{
+  color: #86E57F;
+  margin-left: 5px;
+}
+
+.neg-info span a{
+  color: red;
+  margin-left: 5px;
 }
 
 .bar{

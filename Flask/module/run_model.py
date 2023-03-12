@@ -42,6 +42,8 @@ def get_title_score2():
   from pathlib import Path
   BASE_DIR = Path(__file__).resolve().parent.parent
   df = pd.read_csv(BASE_DIR/'danawa.csv')
+  df=df.dropna(axis=0)
+
   # df = df.drop('Unnamed: 0',axis= 1)
 
   df['review'] = df['review'].str.replace("[^ㄱ-ㅎㅏ-ㅣ가-힣 ]","")
@@ -71,6 +73,13 @@ def get_title_score2():
       'label':predicted_label
   }
 
+  data2 = {
+    'text':df['review'],
+    'label':predicted_label
+  }
+  df_one = pd.DataFrame(data2)
+  df_one.to_csv('test_review_label.csv',encoding='CP949')
+
   df_final = pd.DataFrame(data)
   df_final.to_csv(BASE_DIR/'danawa_label.csv',encoding='CP949')
 
@@ -99,7 +108,6 @@ def get_title_score2():
   good_text=[]
   bad_text=[]
   
-  # print(len(df_final))
   df_final.reset_index(inplace=True)
   for i in range(len(df_final)):
       
@@ -123,8 +131,5 @@ def get_title_score2():
               'label':df_final.loc[i,'label']
           }
           bad_text.append(bad)
-      # except:
-      #     print(i)
-      #     pass
 
-  return good_text, bad_text, pos_per, neg_per, label_review, five_count, four_count, three_count, two_count, one_count, zero_count
+  return good_text, bad_text, pos_per, neg_per, label_review, five_count, four_count, three_count, two_count, one_count, zero_count, df_one

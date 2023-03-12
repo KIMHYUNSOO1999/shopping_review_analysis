@@ -73,13 +73,9 @@
       
       <fieldset class="review">
         <legend><span class="pos">긍정 리뷰</span>Top 3<span class="more"><a onclick="posModal()"><img src="{{ url_for('static', filename='image/add.png') }}"></a></span></legend>
-        {% for data in pos_review %}
-          <div class="pos-info">
-            <span class="first"><img src="{{ data['mall_logo'] }}" class="mall_logo"></span>
-            <span class="bar"> ㅣ </span>
-            <span class="name">{{ data['name'] }}</span>
-            <span class="bar"> ㅣ </span>
-            <span class="date">{{ data['date'] }}</span>
+        {% for data in Positive_Top_3_review %}
+          <div class="pos-info" title=" 유사도 스코어 : {{ data['score'] }}">
+            <span class="grade"><a>Positive</a> Top {{ data['grade'] }}</span>
           </div>
           <div class="first_review">{{ data['review'] }}</div>
         {% endfor %}
@@ -90,16 +86,12 @@
       </div>
     
 
-      <div class="product_info">
+      
         <fieldset class="review">
           <legend><span id="neg">부정 리뷰</span>Top 3<span class="more"><a onclick="negModal()"><img src="{{ url_for('static', filename='image/add.png') }}"></a></span></legend>
-          {% for data in neg_review %}
-            <div class="neg-info">
-              <span class="first"><img src="{{ data['mall_logo'] }}" class="mall_logo"></span>
-              <span class="bar"> ㅣ </span>
-              <span class="name">{{ data['name'] }}</span>
-              <span class="bar"> ㅣ </span>
-              <span class="date">{{ data['date'] }}</span>
+          {% for data in Negative_Top_3_review %}
+            <div class="neg-info" title=" 유사도 스코어 : {{ data['score'] }}">
+              <span class="grade"><a>Negative</a> Top {{ data['grade'] }}</span>
             </div>
             <div class="first_review">{{ data['review'] }}</div>
           {% endfor %}
@@ -127,7 +119,7 @@
         </div>
 
         <hr class="foot-bar2" />
-      </div>
+      
     </div>
   </div>
   <div class="footer">
