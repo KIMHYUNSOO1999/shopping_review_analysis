@@ -63,6 +63,9 @@
   <div style="text-align: center;">
     <div class="product_info">
 
+      <div class="devide-name-first"><a>리뷰 시각화</a></div>
+      <hr class="devide-line-first" />
+
       <div class="chart1">      
         <canvas id="donut_chart" height="420px" width="420px"></canvas>
       </div>
@@ -71,11 +74,14 @@
         <canvas id="bar_chart" height="500px" width="480px"></canvas>
       </div>
       
+      <div class="devide-name-second"><a>리뷰 분석</a></div>
+      <hr class="devide-line-second" />
+
       <fieldset class="review">
         <legend><span class="pos">긍정 리뷰</span>Top 3<span class="more"><a onclick="posModal()"><img src="{{ url_for('static', filename='image/add.png') }}"></a></span></legend>
         {% for data in Positive_Top_3_review %}
           <div class="pos-info" title=" 유사도 스코어 : {{ data['score'] }}">
-            <span class="grade"><a>Positive</a> Top {{ data['grade'] }}</span>
+            <span class="grade">Top {{ data['grade'] }}</span>
           </div>
           <div class="first_review">{{ data['review'] }}</div>
         {% endfor %}
@@ -91,7 +97,7 @@
           <legend><span id="neg">부정 리뷰</span>Top 3<span class="more"><a onclick="negModal()"><img src="{{ url_for('static', filename='image/add.png') }}"></a></span></legend>
           {% for data in Negative_Top_3_review %}
             <div class="neg-info" title=" 유사도 스코어 : {{ data['score'] }}">
-              <span class="grade"><a>Negative</a> Top {{ data['grade'] }}</span>
+              <span class="grade">Top {{ data['grade'] }}</span>
             </div>
             <div class="first_review">{{ data['review'] }}</div>
           {% endfor %}

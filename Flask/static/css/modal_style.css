@@ -197,14 +197,15 @@ body {
 
 /* product_img */
 .product_img{
-  width: 430px;
-  height: 430px;
+  width: 440px;
+  height: 440px;
   margin-right: 210px;
   border-radius: 10px;
   float: right;
   position: relative;
   top: 35px;
   background-color: white;
+  border: 5px solid lightgrey;
 }
 
 /* image */
@@ -246,11 +247,7 @@ body {
   font-family: 'Do Hyeon', sans-serif;
   padding-left: 20px;
   padding-right: 10px;
-  margin-bottom: 8px;
-}
-
-.top3{
-  font-size: 20px;
+  margin-bottom: -8px;
 }
 
 .pos{
@@ -436,11 +433,12 @@ body {
 
 .grade{
   position: relative;
-  top: -1px;
-  font-size: 20px;
+  font-size: 22px;
   margin-right: 5px;
   margin-right: 5px;
   font-weight: bold;
+  margin-left: 18px;
+  font-family: 'Do Hyeon', sans-serif;
 }
 
 .pos-info span a{
@@ -538,7 +536,7 @@ body {
   margin-left: 100px;
   margin-right: 50px;
   margin-bottom: 30px;
-  margin-top: 60px;
+  margin-top: 20px;
   width: 500px;
   height: 460px;
   border: 3px solid #F2F2E2;
@@ -553,7 +551,7 @@ body {
   height: 460px;
   border: 3px solid #F2F2E2;
   border-radius: 10px;
-  margin-top: 60px;
+  margin-top: 20px;
   margin-right: 100px;
   display: inline-block;
   position: relative;
@@ -570,7 +568,7 @@ body {
 }
 
 .foot-bar{
-  border: 2px solid lightgray;
+  border: 3px solid lightgray;
   margin-top: 85px;
 }
 
@@ -580,6 +578,7 @@ body {
   float: left;
   margin-top: 30px;
   margin-left: 20px;
+  font-family: 'Do Hyeon', sans-serif;
 }
 
 .sug-product{
@@ -596,7 +595,7 @@ body {
 }
 
 .foot-bar2{
-  border: 2px solid lightgray;
+  border: 3px solid lightgray;
   margin-top: 40px;
 }
 
@@ -666,3 +665,34 @@ body {
   margin: 0 auto;
 }
 
+.devide-name-first{
+  float: left;
+  margin-left: 100px;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-size: 30px;
+  font-weight: bold;
+  font-family: 'Do Hyeon', sans-serif;
+}
+
+.devide-line-first{
+  border: 3px solid lightgray;
+  width: 90%;
+  margin-top: 20px;
+}
+
+.devide-name-second{
+  float: left;
+  margin-left: 100px;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  font-size: 30px;
+  font-weight: bold;
+  font-family: 'Do Hyeon', sans-serif;
+}
+.devide-line-second{
+  border: 3px solid lightgray;
+  width: 90%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
