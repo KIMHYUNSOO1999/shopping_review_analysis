@@ -9,6 +9,7 @@ from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import matplotlib.pyplot as plt
 from collections import Counter
 from PIL import Image
+import seaborn as sns
 import matplotlib 
 from IPython.display import set_matplotlib_formats 
 from konlpy.tag import Okt,Mecab
@@ -374,6 +375,46 @@ async def Processing_TextRank(df):
     
     return keysents_good,keysents_bad
 
+async def Processing_Graph(df):
+    df_group1 = df.groupby(['year', 'quarter'])['label_new'].apply(lambda x: pd.Series([(x == 0).sum(), (x == 1).sum()])).reset_index()
+    df_group1.rename(columns={'level_2':'PN','label_new':'value'},inplace=True)
+
+    df_1=df.groupby(['year','quarter']).count().reset_index()
+    df_1.rename(columns={'label_new':'value'},inplace=True)
+
+    del df_1['text']
+    del df_1['month']
+    del df_1['label_old']
+
+    sns.set_theme(style="ticks")
+    plt.title('All Year&Qauter review', fontsize=14)
+    sns.set(rc = {'figure.figsize':(15,15)})
+    ax=sns.barplot(data=df_1,x='year',y='value',hue='quarter',ci=None)
+    ax.legend(['Q1','Q2','Q3','Q4'],loc='upper right')
+    plt.savefig('image1.png')
+
+    df_2=df_group1.groupby(['year','PN']).sum().reset_index()
+    del df_2['quarter']
+    
+    plt.clf()
+    sns.set_theme(style="ticks")
+    plt.title('All Year&Qauter Positive/Negative', fontsize=14)
+    sns.set(rc = {'figure.figsize':(8,8)})
+    ax=sns.barplot(data=df_2,x='year',y='value',hue='PN',ci=None)
+    ax.legend(['Negative','Positive'],loc='upper right')
+    plt.savefig('image2.png')
+
+    df_3=df_group1.groupby('year').sum().reset_index()
+    df_3
+
+    plt.clf()
+    sns.set(rc = {'figure.figsize':(8,8)})
+    sns.set_theme(style="ticks")
+    plt.title('All Year Reiview', fontsize=14)
+    ax=sns.barplot(data=df_3,x='year',y='value',ci=None)
+    plt.savefig('image3.png')
+
+
 # def Prcessing_main():
     
 #     df=pd.read_csv('/content/drive/MyDrive/halla/danawa2.csv')
@@ -393,6 +434,7 @@ async def Processing_TextRank(df):
 async def Processing_async(df):
 
     await Processing_Mecab(df)
+    await Processing_Graph(df)
     Top3_good,Top3_bad=  await Processing_TextRank(df)
 
     return Top3_good,Top3_bad
