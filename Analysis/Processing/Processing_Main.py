@@ -226,7 +226,7 @@ async def Processing_Mecab(df):
     df.reset_index(inplace=True)
 
     for i in range(len(df)):
-        if df.loc[i,'label']==1:
+        if df.loc[i,'label_new']==1:
             good_text.append(df.loc[i,'text'])
         else:
             bad_text.append(df.loc[i,'text'])
@@ -236,18 +236,14 @@ async def Processing_Mecab(df):
 
         i=i.strip()
 
-        if ('https:'in str(i)) or (str(i).rstrip()==''):
-            good_text.remove(i)
-        elif '\r\n\r\n' in i:
+        if '\r\n\r\n' in i:
             good_text[good_text.index(i)]=i.replace('\r\n\r\n','')
 
     for i in bad_text:
 
         i=i.strip()
 
-        if ('https:' in str(i)) or (str(i).rstrip()==''):
-            bad_text.remove(i)
-        elif '\r\n\r\n' in i:
+        if '\r\n\r\n' in i:
             bad_text[bad_text.index(i)]=i.replace('\r\n\r\n','')
 
     good_text = [x for x in good_text if pd.isnull(x) == False]
@@ -340,11 +336,9 @@ async def Processing_TextRank(df):
 
     good_text=[]
     bad_text=[]
-
-    df.reset_index(inplace=True)
     
     for i in range(len(df)):
-        if df.loc[i,'label']==1:
+        if df.loc[i,'label_new']==1:
             good_text.append(df.loc[i,'text'])
         else:
             bad_text.append(df.loc[i,'text'])
@@ -353,18 +347,14 @@ async def Processing_TextRank(df):
 
         i=i.strip()
 
-        if ('https:'in str(i)) or (str(i).rstrip()==''):
-            good_text.remove(i)
-        elif '\r\n\r\n' in i:
+        if '\r\n\r\n' in i:
             good_text[good_text.index(i)]=i.replace('\r\n\r\n','')
 
     for i in bad_text:
 
         i=i.strip()
 
-        if ('https:' in str(i)) or (str(i).rstrip()==''):
-            bad_text.remove(i)
-        elif '\r\n\r\n' in i:
+        if '\r\n\r\n' in i:
             bad_text[bad_text.index(i)]=i.replace('\r\n\r\n','')
 
     summarizer = KeysentenceSummarizer(tokenize = Mecab_tokenizer, min_sim = 0.6)
@@ -415,22 +405,6 @@ async def Processing_Graph(df):
     plt.savefig('image3.png')
 
 
-# def Prcessing_main():
-    
-#     df=pd.read_csv('/content/drive/MyDrive/halla/danawa2.csv')
-#     df=df.dropna(axis=0)
-
-#     start_time = time.time()
-
-#     df_one=Processing_classification(df)
-#     # Processing_OKT(df_one)
-#     Processing_Mecab(df_one)
-#     Top3_good,Top3_bad=Processing_TextRank(df_one)
-
-#     end_time = time.time()
-
-#     print(end_time-start_time)
-
 async def Processing_async(df):
 
     await Processing_Mecab(df)
@@ -439,7 +413,7 @@ async def Processing_async(df):
 
     return Top3_good,Top3_bad
 
-def Prcessing_main2():
+def Prcessing_main():
     
     df=pd.read_csv('/content/drive/MyDrive/halla/danawa2.csv')
     df=df.dropna(axis=0)
@@ -454,4 +428,4 @@ def Prcessing_main2():
 
     print(end_time-start_time)
 
-Prcessing_main2()
+Prcessing_main()
