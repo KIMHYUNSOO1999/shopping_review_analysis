@@ -9,11 +9,12 @@ import matplotlib.pyplot as plt
 import matplotlib 
 from IPython.display import set_matplotlib_formats 
 from eunjeon import Mecab
+import asyncio
 # from konlpy.tag import Mecab
 
 mecab = Mecab()
 
-def Processing_Mecab():
+async def Processing_Mecab():
   good_text=[]
   bad_text=[]
   df2 = pd.read_csv('danawa_label.csv', encoding='CP949')

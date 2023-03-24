@@ -73,6 +73,25 @@
       <div class="chart2">
         <canvas id="bar_chart" height="500px" width="480px"></canvas>
       </div>
+
+      <div class="chart3">
+        <select name="year" onchange="handleOnChange(this)" class="year">
+          <option value="2023_chart" selected>2023년</option>
+          <option value="2022_chart">2022년</option>
+          <option value="2021_chart">2021년</option>
+          <option value="2020_chart">2020년</option>
+          <option value="2019_chart">~2019년</option>
+        </select>
+        <canvas id="year-quarter-posnegreview-count" height="440px" width="460px"></canvas>
+      </div>
+
+      <div class="chart4">
+        <select name="year2" onchange="handleOnChange2(this)" class="year2">
+          <option value="year_quarter_review" selected>연도&분기</option>
+          <option value="year_review">연도</option>
+        </select>
+        <canvas id="year-quarter-review-count" height="440px" width="460px"></canvas>
+      </div>
       
       <div class="devide-name-second"><a>리뷰 분석</a></div>
       <hr class="devide-line-second" />
@@ -389,11 +408,10 @@
 
           // The data for our dataset
           data: {
-              labels: ['0점', '1점', '2점', '3점', '4점', '5점'],
+              labels: ['1점', '2점', '3점', '4점', '5점'],
               datasets: [{
                   label: '쇼핑몰 별점 별 리뷰 갯수',
                   backgroundColor: [
-                      'rgba(255, 99, 132, 0.5)',
                       'rgba(255, 99, 132, 0.5)',
                       'rgba(255, 99, 132, 0.5)',
                       'rgba(75, 192, 192, 0.5)',
@@ -403,12 +421,11 @@
                   borderColor: [
                       'rgba(255, 99, 132, 1)',
                       'rgba(255, 99, 132, 1)',
-                      'rgba(255, 99, 132, 1)',
                       'rgba(75, 192, 192, 1)',
                       'rgba(75, 192, 192, 1)',
                       'rgba(75, 192, 192, 1)'
                     ],
-                  data: [zero, one, two, three, four, five]
+                  data: [one, two, three, four, five]
               }]
           },
 
@@ -445,6 +462,7 @@
           }
       });
 
+      //도넛 차트
       var ctx = document.getElementById("donut_chart");
       var pos = '{{ donut_per.pos }}'
       var neg = '{{ donut_per.neg }}'
@@ -486,6 +504,1073 @@
 
         }
       });
+
+      // 연도별 분기 긍부정 리뷰 개수 차트
+      function handleOnChange(e) {
+        // 선택된 데이터 가져오기
+        const value = e.value;
+        if(value == "2023_chart"){
+            $('#year-quarter-posnegreview-count').remove(); 
+            $('.chart3').append('<canvas id="year-quarter-posnegreview-count" height="440px" width="460px"><canvas>');
+            // 긍정 카운트
+            var firstQuarter_pos_cnt23 = '{{ firstQuarter_pos_cnt23 }}'
+            var secondQuarter_pos_cnt23 = '{{ secondQuarter_pos_cnt23 }}'
+            var thirdQuarter_pos_cnt23 = '{{ thirdQuarter_pos_cnt23 }}'
+            var fourthQuarter_pos_cnt23 = '{{ fourthQuarter_pos_cnt23 }}'
+            
+            //부정 카운트
+            var firstQuarter_neg_cnt23 = '{{ firstQuarter_neg_cnt23 }}'
+            var secondQuarter_neg_cnt23 = '{{ secondQuarter_neg_cnt23 }}'
+            var thirdQuarter_neg_cnt23 = '{{ thirdQuarter_neg_cnt23 }}'
+            var fourthQuarter_neg_cnt23 = '{{ fourthQuarter_neg_cnt23}}'
+
+            var ctx = document.getElementById('year-quarter-posnegreview-count').getContext('2d');
+            var chart1 = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'bar',
+
+                // The data for our dataset
+                data: {
+                    labels: ['1분기', '2분기', '3분기', '4분기'],
+                    datasets: [{
+                        label: '긍정',
+                        backgroundColor:[
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)'
+                        ],
+                        borderWidth: 1.5,
+                        data: [firstQuarter_pos_cnt23,secondQuarter_pos_cnt23,thirdQuarter_pos_cnt23,fourthQuarter_pos_cnt23]
+                    },
+                    {
+                        label: '부정',
+                        backgroundColor:[
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)'
+                        ],
+                        borderWidth: 1.5,
+                        data: [firstQuarter_neg_cnt23,secondQuarter_neg_cnt23,thirdQuarter_neg_cnt23,fourthQuarter_neg_cnt23]
+                    }]
+                },
+                // Configuration options go here
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Year&Quarter PNReview',
+                        fontSize: 15,
+                        fontColor: 'rgba(46, 49, 49, 1)'
+                    },
+                    legend: {
+                        labels: {
+                            fontColor: 'rgba(83, 51, 237, 1)',
+                            fontSize: 13
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                fontColor: 'rgba(27, 163, 156, 1)',
+                                fontSize: '15'
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                fontColor: 'rgba(246, 36, 89, 1)',
+                                fontSize: '15'
+                            }
+                        }]
+                    },
+                    responsive:false,
+                }
+            });
+  
+        }
+        else if(value == "2022_chart"){
+            $('#year-quarter-posnegreview-count').remove(); 
+            $('.chart3').append('<canvas id="year-quarter-posnegreview-count" height="440px" width="460px"><canvas>');
+            // 긍정 카운트
+            var firstQuarter_pos_cnt22 = '{{ firstQuarter_pos_cnt22 }}'
+            var secondQuarter_pos_cnt22 = '{{ secondQuarter_pos_cnt22 }}'
+            var thirdQuarter_pos_cnt22 = '{{ thirdQuarter_pos_cnt22 }}'
+            var fourthQuarter_pos_cnt22 = '{{ fourthQuarter_pos_cnt22 }}'
+            
+            //부정 카운트
+            var firstQuarter_neg_cnt22 = '{{ firstQuarter_neg_cnt22 }}'
+            var secondQuarter_neg_cnt22 = '{{ secondQuarter_neg_cnt22 }}'
+            var thirdQuarter_neg_cnt22 = '{{ thirdQuarter_neg_cnt22 }}'
+            var fourthQuarter_neg_cnt22 = '{{ fourthQuarter_neg_cnt22}}'
+
+            var ctx = document.getElementById('year-quarter-posnegreview-count').getContext('2d');
+            var chart2 = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'bar',
+
+                // The data for our dataset
+                data: {
+                    labels: ['1분기', '2분기', '3분기', '4분기'],
+                    datasets: [{
+                        label: '긍정',
+                        backgroundColor:[
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)'
+                        ],
+                        borderWidth: 1.5,
+                        data: [firstQuarter_pos_cnt22,secondQuarter_pos_cnt22,thirdQuarter_pos_cnt22,fourthQuarter_pos_cnt22]
+                    },
+                    {
+                        label: '부정',
+                        backgroundColor:[
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)'
+                        ],
+                        borderWidth: 1.5,
+                        data: [firstQuarter_neg_cnt22,secondQuarter_neg_cnt22,thirdQuarter_neg_cnt22,fourthQuarter_neg_cnt22]
+                    }]
+                },
+                // Configuration options go here
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Year&Quarter PNReview',
+                        fontSize: 15,
+                        fontColor: 'rgba(46, 49, 49, 1)'
+                    },
+                    legend: {
+                        labels: {
+                            fontColor: 'rgba(83, 51, 237, 1)',
+                            fontSize: 13
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                fontColor: 'rgba(27, 163, 156, 1)',
+                                fontSize: '15'
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                fontColor: 'rgba(246, 36, 89, 1)',
+                                fontSize: '15'
+                            }
+                        }]
+                    },
+                    responsive:false,
+                }
+            });
+        }
+        else if(value == "2021_chart"){
+            $('#year-quarter-posnegreview-count').remove(); 
+            $('.chart3').append('<canvas id="year-quarter-posnegreview-count" height="440px" width="460px"><canvas>');
+            // 긍정 카운트
+            var firstQuarter_pos_cnt21 = '{{ firstQuarter_pos_cnt21 }}'
+            var secondQuarter_pos_cnt21 = '{{ secondQuarter_pos_cnt21 }}'
+            var thirdQuarter_pos_cnt21 = '{{ thirdQuarter_pos_cnt21 }}'
+            var fourthQuarter_pos_cnt21 = '{{ fourthQuarter_pos_cnt21 }}'
+            
+            //부정 카운트
+            var firstQuarter_neg_cnt21 = '{{ firstQuarter_neg_cnt21 }}'
+            var secondQuarter_neg_cnt21 = '{{ secondQuarter_neg_cnt21 }}'
+            var thirdQuarter_neg_cnt21 = '{{ thirdQuarter_neg_cnt21 }}'
+            var fourthQuarter_neg_cnt21 = '{{ fourthQuarter_neg_cnt21}}'
+
+            var ctx = document.getElementById('year-quarter-posnegreview-count').getContext('2d');
+            var chart2 = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'bar',
+
+                // The data for our dataset
+                data: {
+                    labels: ['1분기', '2분기', '3분기', '4분기'],
+                    datasets: [{
+                        label: '긍정',
+                        backgroundColor:[
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)'
+                        ],
+                        borderWidth: 1.5,
+                        data: [firstQuarter_pos_cnt21,secondQuarter_pos_cnt21,thirdQuarter_pos_cnt21,fourthQuarter_pos_cnt21]
+                    },
+                    {
+                        label: '부정',
+                        backgroundColor:[
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)'
+                        ],
+                        borderWidth: 1.5,
+                        data: [firstQuarter_neg_cnt21,secondQuarter_neg_cnt21,thirdQuarter_neg_cnt21,fourthQuarter_neg_cnt21]
+                    }]
+                },
+                // Configuration options go here
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Year&Quarter PNReview',
+                        fontSize: 15,
+                        fontColor: 'rgba(46, 49, 49, 1)'
+                    },
+                    legend: {
+                        labels: {
+                            fontColor: 'rgba(83, 51, 237, 1)',
+                            fontSize: 13
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                fontColor: 'rgba(27, 163, 156, 1)',
+                                fontSize: '15'
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                fontColor: 'rgba(246, 36, 89, 1)',
+                                fontSize: '15'
+                            }
+                        }]
+                    },
+                    responsive:false,
+                }
+            });
+        }
+        else if(value == "2020_chart"){
+            $('#year-quarter-posnegreview-count').remove(); 
+            $('.chart3').append('<canvas id="year-quarter-posnegreview-count" height="440px" width="460px"><canvas>');
+            // 긍정 카운트
+            var firstQuarter_pos_cnt20 = '{{ firstQuarter_pos_cnt20 }}'
+            var secondQuarter_pos_cnt20 = '{{ secondQuarter_pos_cnt20 }}'
+            var thirdQuarter_pos_cnt20 = '{{ thirdQuarter_pos_cnt20 }}'
+            var fourthQuarter_pos_cnt20 = '{{ fourthQuarter_pos_cnt20 }}'
+            
+            //부정 카운트
+            var firstQuarter_neg_cnt20 = '{{ firstQuarter_neg_cnt20 }}'
+            var secondQuarter_neg_cnt20 = '{{ secondQuarter_neg_cnt20 }}'
+            var thirdQuarter_neg_cnt20 = '{{ thirdQuarter_neg_cnt20 }}'
+            var fourthQuarter_neg_cnt20 = '{{ fourthQuarter_neg_cnt20}}'
+
+            var ctx = document.getElementById('year-quarter-posnegreview-count').getContext('2d');
+            var chart2 = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'bar',
+
+                // The data for our dataset
+                data: {
+                    labels: ['1분기', '2분기', '3분기', '4분기'],
+                    datasets: [{
+                        label: '긍정',
+                        backgroundColor:[
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)'
+                        ],
+                        borderWidth: 1.5,
+                        data: [firstQuarter_pos_cnt20,secondQuarter_pos_cnt20,thirdQuarter_pos_cnt20,fourthQuarter_pos_cnt20]
+                    },
+                    {
+                        label: '부정',
+                        backgroundColor:[
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)'
+                        ],
+                        borderWidth: 1.5,
+                        data: [firstQuarter_neg_cnt20,secondQuarter_neg_cnt20,thirdQuarter_neg_cnt20,fourthQuarter_neg_cnt20]
+                    }]
+                },
+                // Configuration options go here
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Year&Quarter PNReview',
+                        fontSize: 15,
+                        fontColor: 'rgba(46, 49, 49, 1)'
+                    },
+                    legend: {
+                        labels: {
+                            fontColor: 'rgba(83, 51, 237, 1)',
+                            fontSize: 13
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                fontColor: 'rgba(27, 163, 156, 1)',
+                                fontSize: '15'
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                fontColor: 'rgba(246, 36, 89, 1)',
+                                fontSize: '15'
+                            }
+                        }]
+                    },
+                    responsive:false,
+                }
+            });
+        }
+        else if(value == "2019_chart"){
+            $('#year-quarter-posnegreview-count').remove(); 
+            $('.chart3').append('<canvas id="year-quarter-posnegreview-count" height="440px" width="460px"><canvas>');
+            // 긍정 카운트
+            var firstQuarter_pos_cnt_other = '{{ firstQuarter_pos_cnt_other }}'
+            var secondQuarter_pos_cnt_other = '{{ secondQuarter_pos_cnt_other }}'
+            var thirdQuarter_pos_cnt_other = '{{ thirdQuarter_pos_cnt_other }}'
+            var fourthQuarter_pos_cnt_other = '{{ fourthQuarter_pos_cnt_other }}'
+            
+            //부정 카운트
+            var firstQuarter_neg_cnt_other = '{{ firstQuarter_neg_cnt_other }}'
+            var secondQuarter_neg_cnt_other = '{{ secondQuarter_neg_cnt_other }}'
+            var thirdQuarter_neg_cnt_other = '{{ thirdQuarter_neg_cnt_other }}'
+            var fourthQuarter_neg_cnt_other = '{{ fourthQuarter_neg_cnt_other}}'
+
+            var ctx = document.getElementById('year-quarter-posnegreview-count').getContext('2d');
+            var chart2 = new Chart(ctx, {
+                // The type of chart we want to create
+                type: 'bar',
+
+                // The data for our dataset
+                data: {
+                    labels: ['1분기', '2분기', '3분기', '4분기'],
+                    datasets: [{
+                        label: '긍정',
+                        backgroundColor:[
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)',
+                            'rgb(54, 162, 235, 1.5)'
+                        ],
+                        borderWidth: 1.5,
+                        data: [firstQuarter_pos_cnt_other,secondQuarter_pos_cnt_other,thirdQuarter_pos_cnt_other,fourthQuarter_pos_cnt_other]
+                    },
+                    {
+                        label: '부정',
+                        backgroundColor:[
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)',
+                            'rgba(255, 99, 132,1.5)'
+                        ],
+                        borderWidth: 1.5,
+                        data: [firstQuarter_neg_cnt_other,secondQuarter_neg_cnt_other,thirdQuarter_neg_cnt_other,fourthQuarter_neg_cnt_other]
+                    }]
+                },
+                // Configuration options go here
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Year&Quarter PNReview',
+                        fontSize: 15,
+                        fontColor: 'rgba(46, 49, 49, 1)'
+                    },
+                    legend: {
+                        labels: {
+                            fontColor: 'rgba(83, 51, 237, 1)',
+                            fontSize: 13
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                fontColor: 'rgba(27, 163, 156, 1)',
+                                fontSize: '15'
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                fontColor: 'rgba(246, 36, 89, 1)',
+                                fontSize: '15'
+                            }
+                        }]
+                    },
+                    responsive:false,
+                }
+            });
+        }
+    }
+    // 기본 노출 차트(2023년도 분기별 긍부정 개수) -----------------------------------------
+    // 긍정 카운트
+    var firstQuarter_pos_cnt23 = '{{ firstQuarter_pos_cnt23 }}'
+    var secondQuarter_pos_cnt23 = '{{ secondQuarter_pos_cnt23 }}'
+    var thirdQuarter_pos_cnt23 = '{{ thirdQuarter_pos_cnt23 }}'
+    var fourthQuarter_pos_cnt23 = '{{ fourthQuarter_pos_cnt23 }}'
+    //부정 카운트
+    var firstQuarter_neg_cnt23 = '{{ firstQuarter_neg_cnt23 }}'
+    var secondQuarter_neg_cnt23 = '{{ secondQuarter_neg_cnt23 }}'
+    var thirdQuarter_neg_cnt23 = '{{ thirdQuarter_neg_cnt23 }}'
+    var fourthQuarter_neg_cnt23 = '{{ fourthQuarter_neg_cnt23}}'
+
+    var ctx = document.getElementById('year-quarter-posnegreview-count').getContext('2d');
+    var chart1 = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'bar',
+
+        // The data for our dataset
+        data: {
+            labels: ['1분기', '2분기', '3분기', '4분기'],
+            datasets: [{
+                label: '긍정',
+                backgroundColor:[
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(54, 162, 235, 0.5)'
+                ],
+                borderColor: [
+                    'rgb(54, 162, 235, 1.5)',
+                    'rgb(54, 162, 235, 1.5)',
+                    'rgb(54, 162, 235, 1.5)',
+                    'rgb(54, 162, 235, 1.5)'
+                ],
+                borderWidth: 1.5,
+                data: [firstQuarter_pos_cnt23,secondQuarter_pos_cnt23,thirdQuarter_pos_cnt23,fourthQuarter_pos_cnt23]
+            },
+            {
+                label: '부정',
+                backgroundColor:[
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(255, 99, 132, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132,1.5)',
+                    'rgba(255, 99, 132,1.5)',
+                    'rgba(255, 99, 132,1.5)',
+                    'rgba(255, 99, 132,1.5)'
+                ],
+                borderWidth: 1.5,
+                data: [firstQuarter_neg_cnt23,secondQuarter_neg_cnt23,thirdQuarter_neg_cnt23,fourthQuarter_neg_cnt23]
+            }]
+        },
+        // Configuration options go here
+        options: {
+            title: {
+                display: true,
+                text: 'Year&Quarter PNReview',
+                fontSize: 15,
+                fontColor: 'rgba(46, 49, 49, 1)'
+            },
+            legend: {
+                labels: {
+                    fontColor: 'rgba(83, 51, 237, 1)',
+                    fontSize: 13
+                }
+            },
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        fontColor: 'rgba(27, 163, 156, 1)',
+                        fontSize: '15'
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        fontColor: 'rgba(246, 36, 89, 1)',
+                        fontSize: '15'
+                    }
+                }]
+            },
+            responsive:false,
+        }
+    });
+
+    //연도&분기 리뷰 총 개수
+
+    function handleOnChange2(e) {
+        // 선택된 데이터 가져오기
+        const value = e.value;
+        if(value == "year_quarter_review"){
+          $('#year-quarter-review-count').remove(); 
+          $('.chart4').append('<canvas id="year-quarter-review-count" height="440px" width="460px"><canvas>');
+          // 긍정 카운트
+          var firstQuarter_pos_cnt23 = '{{ firstQuarter_pos_cnt23 }}'
+              var secondQuarter_pos_cnt23 = '{{ secondQuarter_pos_cnt23 }}'
+              var thirdQuarter_pos_cnt23 = '{{ thirdQuarter_pos_cnt23 }}'
+              var fourthQuarter_pos_cnt23 = '{{ fourthQuarter_pos_cnt23 }}'
+              
+              //부정 카운트
+              var firstQuarter_neg_cnt23 = '{{ firstQuarter_neg_cnt23 }}'
+              var secondQuarter_neg_cnt23 = '{{ secondQuarter_neg_cnt23 }}'
+              var thirdQuarter_neg_cnt23 = '{{ thirdQuarter_neg_cnt23 }}'
+              var fourthQuarter_neg_cnt23 = '{{ fourthQuarter_neg_cnt23}}'
+
+              // 분기별 총 리뷰개수
+              var firstQuarter23 = parseInt(firstQuarter_pos_cnt23) + parseInt(firstQuarter_neg_cnt23)
+              var secondQuarter23 = parseInt(secondQuarter_pos_cnt23) + parseInt(secondQuarter_neg_cnt23)
+              var thirdQuarter23 = parseInt(thirdQuarter_pos_cnt23) + parseInt(thirdQuarter_neg_cnt23)
+              var fourthQuarter23 = parseInt(fourthQuarter_pos_cnt23) + parseInt(fourthQuarter_neg_cnt23)
+
+              // 2022년도 -------------------------------------------------------------------------------------------
+              // 긍정 카운트
+              var firstQuarter_pos_cnt22 = '{{ firstQuarter_pos_cnt22 }}'
+              var secondQuarter_pos_cnt22 = '{{ secondQuarter_pos_cnt22 }}'
+              var thirdQuarter_pos_cnt22 = '{{ thirdQuarter_pos_cnt22 }}'
+              var fourthQuarter_pos_cnt22 = '{{ fourthQuarter_pos_cnt22 }}'
+              
+              //부정 카운트
+              var firstQuarter_neg_cnt22 = '{{ firstQuarter_neg_cnt22 }}'
+              var secondQuarter_neg_cnt22 = '{{ secondQuarter_neg_cnt22 }}'
+              var thirdQuarter_neg_cnt22 = '{{ thirdQuarter_neg_cnt22 }}'
+              var fourthQuarter_neg_cnt22 = '{{ fourthQuarter_neg_cnt22 }}'
+
+              var firstQuarter22 = parseInt(firstQuarter_pos_cnt22) + parseInt(firstQuarter_neg_cnt22)
+              var secondQuarter22 = parseInt(secondQuarter_pos_cnt22) + parseInt(secondQuarter_neg_cnt22)
+              var thirdQuarter22 = parseInt(thirdQuarter_pos_cnt22) + parseInt(thirdQuarter_neg_cnt22)
+              var fourthQuarter22 = parseInt(fourthQuarter_pos_cnt22) + parseInt(fourthQuarter_neg_cnt22)
+
+              // 2021년도 ------------------------------------------------------------------------------------------------
+              // 긍정 카운트
+              var firstQuarter_pos_cnt21 = '{{ firstQuarter_pos_cnt21 }}'
+              var secondQuarter_pos_cnt21 = '{{ secondQuarter_pos_cnt21 }}'
+              var thirdQuarter_pos_cnt21 = '{{ thirdQuarter_pos_cnt21 }}'
+              var fourthQuarter_pos_cnt21 = '{{ fourthQuarter_pos_cnt21 }}'
+              
+              //부정 카운트
+              var firstQuarter_neg_cnt21 = '{{ firstQuarter_neg_cnt21 }}'
+              var secondQuarter_neg_cnt21 = '{{ secondQuarter_neg_cnt21 }}'
+              var thirdQuarter_neg_cnt21 = '{{ thirdQuarter_neg_cnt21 }}'
+              var fourthQuarter_neg_cnt21 = '{{ fourthQuarter_neg_cnt21 }}'
+
+              var firstQuarter21 = parseInt(firstQuarter_pos_cnt21) + parseInt(firstQuarter_neg_cnt21)
+              var secondQuarter21 = parseInt(secondQuarter_pos_cnt21) + parseInt(secondQuarter_neg_cnt21)
+              var thirdQuarter21 = parseInt(thirdQuarter_pos_cnt21) + parseInt(thirdQuarter_neg_cnt21)
+              var fourthQuarter21 = parseInt(fourthQuarter_pos_cnt21) + parseInt(fourthQuarter_neg_cnt21)
+
+              // 2020년도 ------------------------------------------------------------------------------------------------------
+              // 긍정 카운트
+              var firstQuarter_pos_cnt20 = '{{ firstQuarter_pos_cnt20 }}'
+              var secondQuarter_pos_cnt20 = '{{ secondQuarter_pos_cnt20 }}'
+              var thirdQuarter_pos_cnt20 = '{{ thirdQuarter_pos_cnt20 }}'
+              var fourthQuarter_pos_cnt20 = '{{ fourthQuarter_pos_cnt20 }}'
+              
+              //부정 카운트
+              var firstQuarter_neg_cnt20 = '{{ firstQuarter_neg_cnt20 }}'
+              var secondQuarter_neg_cnt20 = '{{ secondQuarter_neg_cnt20 }}'
+              var thirdQuarter_neg_cnt20 = '{{ thirdQuarter_neg_cnt20 }}'
+              var fourthQuarter_neg_cnt20 = '{{ fourthQuarter_neg_cnt20 }}'
+
+              var firstQuarter20 = parseInt(firstQuarter_pos_cnt20) + parseInt(firstQuarter_neg_cnt20)
+              var secondQuarter20 = parseInt(secondQuarter_pos_cnt20) + parseInt(secondQuarter_neg_cnt20)
+              var thirdQuarter20 = parseInt(thirdQuarter_pos_cnt20) + parseInt(thirdQuarter_neg_cnt20)
+              var fourthQuarter20 = parseInt(fourthQuarter_pos_cnt20)+ parseInt(fourthQuarter_neg_cnt20)
+
+
+              var ctx = document.getElementById('year-quarter-review-count').getContext('2d');
+              var chart_base = new Chart(ctx, {
+                  // The type of chart we want to create
+                  type: 'bar',
+
+                  // The data for our dataset
+                  data: {
+                      labels: ['2020년', '2021년', '2022년', '2023년'],
+                      datasets: [{
+                          label: '1분기',
+                          backgroundColor:[
+                              'rgba(54, 162, 235, 0.5)',
+                              'rgba(54, 162, 235, 0.5)',
+                              'rgba(54, 162, 235, 0.5)',
+                              'rgba(54, 162, 235, 0.5)'
+                          ],
+                          borderColor: [
+                              'rgb(54, 162, 235, 1.5)',
+                              'rgb(54, 162, 235, 1.5)',
+                              'rgb(54, 162, 235, 1.5)',
+                              'rgb(54, 162, 235, 1.5)'
+                          ],
+                          borderWidth: 1.5,
+                          data: [firstQuarter20,firstQuarter21,firstQuarter22,firstQuarter23]
+                      },
+                      {
+                          label: '2분기',
+                          backgroundColor:[
+                              'rgba(255, 99, 132, 0.5)',
+                              'rgba(255, 99, 132, 0.5)',
+                              'rgba(255, 99, 132, 0.5)',
+                              'rgba(255, 99, 132, 0.5)'
+                          ],
+                          borderColor: [
+                              'rgba(255, 99, 132,1.5)',
+                              'rgba(255, 99, 132,1.5)',
+                              'rgba(255, 99, 132,1.5)',
+                              'rgba(255, 99, 132,1.5)'
+                          ],
+                          borderWidth: 1.5,
+                          data: [secondQuarter20,secondQuarter21,secondQuarter22,secondQuarter23]
+                      },
+                      {
+                          label: '3분기',
+                          backgroundColor:[
+                              'rgba(250, 237, 125, 0.5)',
+                              'rgba(250, 237, 125, 0.5)',
+                              'rgba(250, 237, 125, 0.5)',
+                              'rgba(250, 237, 125, 0.5)'
+                          ],
+                          borderColor: [
+                              'rgba(250, 237, 125, 1.5)',
+                              'rgba(250, 237, 125, 1.5)',
+                              'rgba(250, 237, 125, 1.5)',
+                              'rgba(250, 237, 125, 1.5)'
+                          ],
+                          borderWidth: 1.5,
+                          data: [thirdQuarter20,thirdQuarter21,thirdQuarter22,thirdQuarter23]
+                      },
+                      {
+                          label: '4분기',
+                          backgroundColor:[
+                              'rgba(134, 229, 127, 0.5)',
+                              'rgba(134, 229, 127, 0.5)',
+                              'rgba(134, 229, 127, 0.5)',
+                              'rgba(134, 229, 127, 0.5)'
+                          ],
+                          borderColor: [
+                              'rgba(134, 229, 127, 1.5)',
+                              'rgba(134, 229, 127, 1.5)',
+                              'rgba(134, 229, 127, 1.5)',
+                              'rgba(134, 229, 127, 1.5)'
+                          ],
+                          borderWidth: 1.5,
+                          data: [fourthQuarter20,fourthQuarter21,fourthQuarter22,fourthQuarter23]
+                      }]
+                  },
+                  // Configuration options go here
+                  options: {
+                      title: {
+                          display: true,
+                          text: 'All Year&Qaurter review',
+                          fontSize: 15,
+                          fontColor: 'rgba(46, 49, 49, 1)'
+                      },
+                      legend: {
+                          labels: {
+                              fontColor: 'rgba(83, 51, 237, 1)',
+                              fontSize: 15,
+                          }
+                      },
+                      scales: {
+                          xAxes: [{
+                              ticks: {
+                                  fontColor: 'rgba(27, 163, 156, 1)',
+                                  fontSize: '15'
+                              }
+                          }],
+                          yAxes: [{
+                              ticks: {
+                                  beginAtZero: true,
+                                  fontColor: 'rgba(246, 36, 89, 1)',
+                                  fontSize: '15'
+                              }
+                          }]
+                      },
+                      responsive:false,
+                  }
+              });
+        }
+        else if(value == "year_review"){
+          $('#year-quarter-review-count').remove(); 
+          $('.chart4').append('<canvas id="year-quarter-review-count" height="440px" width="460px"><canvas>');
+          // 긍정 카운트
+          var firstQuarter_pos_cnt23 = '{{ firstQuarter_pos_cnt23 }}'
+          var secondQuarter_pos_cnt23 = '{{ secondQuarter_pos_cnt23 }}'
+          var thirdQuarter_pos_cnt23 = '{{ thirdQuarter_pos_cnt23 }}'
+          var fourthQuarter_pos_cnt23 = '{{ fourthQuarter_pos_cnt23 }}'
+          
+          //부정 카운트
+          var firstQuarter_neg_cnt23 = '{{ firstQuarter_neg_cnt23 }}'
+          var secondQuarter_neg_cnt23 = '{{ secondQuarter_neg_cnt23 }}'
+          var thirdQuarter_neg_cnt23 = '{{ thirdQuarter_neg_cnt23 }}'
+          var fourthQuarter_neg_cnt23 = '{{ fourthQuarter_neg_cnt23}}'
+
+          // 분기별 총 리뷰개수
+          var firstQuarter23 = parseInt(firstQuarter_pos_cnt23) + parseInt(firstQuarter_neg_cnt23)
+          var secondQuarter23 = parseInt(secondQuarter_pos_cnt23) + parseInt(secondQuarter_neg_cnt23)
+          var thirdQuarter23 = parseInt(thirdQuarter_pos_cnt23) + parseInt(thirdQuarter_neg_cnt23)
+          var fourthQuarter23 = parseInt(fourthQuarter_pos_cnt23) + parseInt(fourthQuarter_neg_cnt23)
+
+          var AllCount23 = parseInt(firstQuarter23) + parseInt(secondQuarter23) + parseInt(thirdQuarter23) + parseInt(fourthQuarter23)
+
+          // 2022년도 -------------------------------------------------------------------------------------------
+          // 긍정 카운트
+          var firstQuarter_pos_cnt22 = '{{ firstQuarter_pos_cnt22 }}'
+          var secondQuarter_pos_cnt22 = '{{ secondQuarter_pos_cnt22 }}'
+          var thirdQuarter_pos_cnt22 = '{{ thirdQuarter_pos_cnt22 }}'
+          var fourthQuarter_pos_cnt22 = '{{ fourthQuarter_pos_cnt22 }}'
+          
+          //부정 카운트
+          var firstQuarter_neg_cnt22 = '{{ firstQuarter_neg_cnt22 }}'
+          var secondQuarter_neg_cnt22 = '{{ secondQuarter_neg_cnt22 }}'
+          var thirdQuarter_neg_cnt22 = '{{ thirdQuarter_neg_cnt22 }}'
+          var fourthQuarter_neg_cnt22 = '{{ fourthQuarter_neg_cnt22 }}'
+
+          var firstQuarter22 = parseInt(firstQuarter_pos_cnt22) + parseInt(firstQuarter_neg_cnt22)
+          var secondQuarter22 = parseInt(secondQuarter_pos_cnt22) + parseInt(secondQuarter_neg_cnt22)
+          var thirdQuarter22 = parseInt(thirdQuarter_pos_cnt22) + parseInt(thirdQuarter_neg_cnt22)
+          var fourthQuarter22 = parseInt(fourthQuarter_pos_cnt22) + parseInt(fourthQuarter_neg_cnt22)
+
+          var AllCount22 = parseInt(firstQuarter22) + parseInt(secondQuarter22) + parseInt(thirdQuarter22) + parseInt(fourthQuarter22)
+
+          // 2021년도 ------------------------------------------------------------------------------------------------
+          // 긍정 카운트
+          var firstQuarter_pos_cnt21 = '{{ firstQuarter_pos_cnt21 }}'
+          var secondQuarter_pos_cnt21 = '{{ secondQuarter_pos_cnt21 }}'
+          var thirdQuarter_pos_cnt21 = '{{ thirdQuarter_pos_cnt21 }}'
+          var fourthQuarter_pos_cnt21 = '{{ fourthQuarter_pos_cnt21 }}'
+          
+          //부정 카운트
+          var firstQuarter_neg_cnt21 = '{{ firstQuarter_neg_cnt21 }}'
+          var secondQuarter_neg_cnt21 = '{{ secondQuarter_neg_cnt21 }}'
+          var thirdQuarter_neg_cnt21 = '{{ thirdQuarter_neg_cnt21 }}'
+          var fourthQuarter_neg_cnt21 = '{{ fourthQuarter_neg_cnt21 }}'
+
+          var firstQuarter21 = parseInt(firstQuarter_pos_cnt21) + parseInt(firstQuarter_neg_cnt21)
+          var secondQuarter21 = parseInt(secondQuarter_pos_cnt21) + parseInt(secondQuarter_neg_cnt21)
+          var thirdQuarter21 = parseInt(thirdQuarter_pos_cnt21) + parseInt(thirdQuarter_neg_cnt21)
+          var fourthQuarter21 = parseInt(fourthQuarter_pos_cnt21) + parseInt(fourthQuarter_neg_cnt21)
+
+          var AllCount21 = parseInt(firstQuarter21) + parseInt(secondQuarter21) + parseInt(thirdQuarter21) + parseInt(fourthQuarter21)
+          // 2020년도 ------------------------------------------------------------------------------------------------------
+          // 긍정 카운트
+          var firstQuarter_pos_cnt20 = '{{ firstQuarter_pos_cnt20 }}'
+          var secondQuarter_pos_cnt20 = '{{ secondQuarter_pos_cnt20 }}'
+          var thirdQuarter_pos_cnt20 = '{{ thirdQuarter_pos_cnt20 }}'
+          var fourthQuarter_pos_cnt20 = '{{ fourthQuarter_pos_cnt20 }}'
+          
+          //부정 카운트
+          var firstQuarter_neg_cnt20 = '{{ firstQuarter_neg_cnt20 }}'
+          var secondQuarter_neg_cnt20 = '{{ secondQuarter_neg_cnt20 }}'
+          var thirdQuarter_neg_cnt20 = '{{ thirdQuarter_neg_cnt20 }}'
+          var fourthQuarter_neg_cnt20 = '{{ fourthQuarter_neg_cnt20 }}'
+
+          var firstQuarter20 = parseInt(firstQuarter_pos_cnt20) + parseInt(firstQuarter_neg_cnt20)
+          var secondQuarter20 = parseInt(secondQuarter_pos_cnt20) + parseInt(secondQuarter_neg_cnt20)
+          var thirdQuarter20 = parseInt(thirdQuarter_pos_cnt20) + parseInt(thirdQuarter_neg_cnt20)
+          var fourthQuarter20 = parseInt(fourthQuarter_pos_cnt20)+ parseInt(fourthQuarter_neg_cnt20)
+          var AllCount20 = parseInt(firstQuarter20) + parseInt(secondQuarter20) + parseInt(thirdQuarter20) + parseInt(fourthQuarter20)
+
+
+          var ctx = document.getElementById('year-quarter-review-count').getContext('2d');
+          var chart_base = new Chart(ctx, {
+              // The type of chart we want to create
+              type: 'bar',
+
+              // The data for our dataset
+              data: {
+                  labels: ['2020년', '2021년', '2022년', '2023년'],
+                  datasets: [{
+                      label: '리뷰',
+                      backgroundColor:[
+                          'rgba(54, 162, 235, 0.5)',
+                          'rgba(255, 99, 132, 0.5)',
+                          'rgba(250, 237, 125, 0.5)',
+                          'rgba(134, 229, 127, 0.5)'
+                      ],
+                      borderColor: [
+                          'rgb(54, 162, 235, 1.5)',
+                          'rgb(255, 99, 132, 1.5)',
+                          'rgb(250, 237, 125, 1.5)',
+                          'rgb(134, 229, 127, 1.5)'
+                      ],
+                      borderWidth: 1.5,
+                      data: [AllCount20,AllCount21,AllCount22,AllCount23]
+                  },]
+              },
+              // Configuration options go here
+              options: {
+                  title: {
+                      display: true,
+                      text: 'All Year review',
+                      fontSize: 15,
+                      fontColor: 'rgba(46, 49, 49, 1)'
+                  },
+                  legend: {
+                      labels: {
+                          fontColor: 'rgba(83, 51, 237, 1)',
+                          fontSize: 15,
+                      }
+                  },
+                  scales: {
+                      xAxes: [{
+                          ticks: {
+                              fontColor: 'rgba(27, 163, 156, 1)',
+                              fontSize: '15'
+                          }
+                      }],
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero: true,
+                              fontColor: 'rgba(246, 36, 89, 1)',
+                              fontSize: '15'
+                          }
+                      }]
+                  },
+                  responsive: false,
+              }
+          });
+
+        }
+    }
+    // 긍정 카운트
+    var firstQuarter_pos_cnt23 = '{{ firstQuarter_pos_cnt23 }}'
+    var secondQuarter_pos_cnt23 = '{{ secondQuarter_pos_cnt23 }}'
+    var thirdQuarter_pos_cnt23 = '{{ thirdQuarter_pos_cnt23 }}'
+    var fourthQuarter_pos_cnt23 = '{{ fourthQuarter_pos_cnt23 }}'
+    
+    //부정 카운트
+    var firstQuarter_neg_cnt23 = '{{ firstQuarter_neg_cnt23 }}'
+    var secondQuarter_neg_cnt23 = '{{ secondQuarter_neg_cnt23 }}'
+    var thirdQuarter_neg_cnt23 = '{{ thirdQuarter_neg_cnt23 }}'
+    var fourthQuarter_neg_cnt23 = '{{ fourthQuarter_neg_cnt23}}'
+
+    // 분기별 총 리뷰개수
+    var firstQuarter23 = parseInt(firstQuarter_pos_cnt23) + parseInt(firstQuarter_neg_cnt23)
+    var secondQuarter23 = parseInt(secondQuarter_pos_cnt23) + parseInt(secondQuarter_neg_cnt23)
+    var thirdQuarter23 = parseInt(thirdQuarter_pos_cnt23) + parseInt(thirdQuarter_neg_cnt23)
+    var fourthQuarter23 = parseInt(fourthQuarter_pos_cnt23) + parseInt(fourthQuarter_neg_cnt23)
+
+    // 2022년도 -------------------------------------------------------------------------------------------
+    // 긍정 카운트
+    var firstQuarter_pos_cnt22 = '{{ firstQuarter_pos_cnt22 }}'
+    var secondQuarter_pos_cnt22 = '{{ secondQuarter_pos_cnt22 }}'
+    var thirdQuarter_pos_cnt22 = '{{ thirdQuarter_pos_cnt22 }}'
+    var fourthQuarter_pos_cnt22 = '{{ fourthQuarter_pos_cnt22 }}'
+    
+    //부정 카운트
+    var firstQuarter_neg_cnt22 = '{{ firstQuarter_neg_cnt22 }}'
+    var secondQuarter_neg_cnt22 = '{{ secondQuarter_neg_cnt22 }}'
+    var thirdQuarter_neg_cnt22 = '{{ thirdQuarter_neg_cnt22 }}'
+    var fourthQuarter_neg_cnt22 = '{{ fourthQuarter_neg_cnt22 }}'
+
+    var firstQuarter22 = parseInt(firstQuarter_pos_cnt22) + parseInt(firstQuarter_neg_cnt22)
+    var secondQuarter22 = parseInt(secondQuarter_pos_cnt22) + parseInt(secondQuarter_neg_cnt22)
+    var thirdQuarter22 = parseInt(thirdQuarter_pos_cnt22) + parseInt(thirdQuarter_neg_cnt22)
+    var fourthQuarter22 = parseInt(fourthQuarter_pos_cnt22) + parseInt(fourthQuarter_neg_cnt22)
+
+    // 2021년도 ------------------------------------------------------------------------------------------------
+    // 긍정 카운트
+    var firstQuarter_pos_cnt21 = '{{ firstQuarter_pos_cnt21 }}'
+    var secondQuarter_pos_cnt21 = '{{ secondQuarter_pos_cnt21 }}'
+    var thirdQuarter_pos_cnt21 = '{{ thirdQuarter_pos_cnt21 }}'
+    var fourthQuarter_pos_cnt21 = '{{ fourthQuarter_pos_cnt21 }}'
+    
+    //부정 카운트
+    var firstQuarter_neg_cnt21 = '{{ firstQuarter_neg_cnt21 }}'
+    var secondQuarter_neg_cnt21 = '{{ secondQuarter_neg_cnt21 }}'
+    var thirdQuarter_neg_cnt21 = '{{ thirdQuarter_neg_cnt21 }}'
+    var fourthQuarter_neg_cnt21 = '{{ fourthQuarter_neg_cnt21 }}'
+
+    var firstQuarter21 = parseInt(firstQuarter_pos_cnt21) + parseInt(firstQuarter_neg_cnt21)
+    var secondQuarter21 = parseInt(secondQuarter_pos_cnt21) + parseInt(secondQuarter_neg_cnt21)
+    var thirdQuarter21 = parseInt(thirdQuarter_pos_cnt21) + parseInt(thirdQuarter_neg_cnt21)
+    var fourthQuarter21 = parseInt(fourthQuarter_pos_cnt21) + parseInt(fourthQuarter_neg_cnt21)
+
+    // 2020년도 ------------------------------------------------------------------------------------------------------
+    // 긍정 카운트
+    var firstQuarter_pos_cnt20 = '{{ firstQuarter_pos_cnt20 }}'
+    var secondQuarter_pos_cnt20 = '{{ secondQuarter_pos_cnt20 }}'
+    var thirdQuarter_pos_cnt20 = '{{ thirdQuarter_pos_cnt20 }}'
+    var fourthQuarter_pos_cnt20 = '{{ fourthQuarter_pos_cnt20 }}'
+    
+    //부정 카운트
+    var firstQuarter_neg_cnt20 = '{{ firstQuarter_neg_cnt20 }}'
+    var secondQuarter_neg_cnt20 = '{{ secondQuarter_neg_cnt20 }}'
+    var thirdQuarter_neg_cnt20 = '{{ thirdQuarter_neg_cnt20 }}'
+    var fourthQuarter_neg_cnt20 = '{{ fourthQuarter_neg_cnt20 }}'
+
+    var firstQuarter20 = parseInt(firstQuarter_pos_cnt20) + parseInt(firstQuarter_neg_cnt20)
+    var secondQuarter20 = parseInt(secondQuarter_pos_cnt20) + parseInt(secondQuarter_neg_cnt20)
+    var thirdQuarter20 = parseInt(thirdQuarter_pos_cnt20) + parseInt(thirdQuarter_neg_cnt20)
+    var fourthQuarter20 = parseInt(fourthQuarter_pos_cnt20)+ parseInt(fourthQuarter_neg_cnt20)
+
+
+    var ctx = document.getElementById('year-quarter-review-count').getContext('2d');
+    var chart_base = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'bar',
+
+        // The data for our dataset
+        data: {
+            labels: ['2020년', '2021년', '2022년', '2023년'],
+            datasets: [{
+                label: '1분기',
+                backgroundColor:[
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(54, 162, 235, 0.5)'
+                ],
+                borderColor: [
+                    'rgb(54, 162, 235, 1.5)',
+                    'rgb(54, 162, 235, 1.5)',
+                    'rgb(54, 162, 235, 1.5)',
+                    'rgb(54, 162, 235, 1.5)'
+                ],
+                borderWidth: 1.5,
+                data: [firstQuarter20,firstQuarter21,firstQuarter22,firstQuarter23]
+            },
+            {
+                label: '2분기',
+                backgroundColor:[
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(255, 99, 132, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132,1.5)',
+                    'rgba(255, 99, 132,1.5)',
+                    'rgba(255, 99, 132,1.5)',
+                    'rgba(255, 99, 132,1.5)'
+                ],
+                borderWidth: 1.5,
+                data: [secondQuarter20,secondQuarter21,secondQuarter22,secondQuarter23]
+            },
+            {
+                label: '3분기',
+                backgroundColor:[
+                    'rgba(250, 237, 125, 0.5)',
+                    'rgba(250, 237, 125, 0.5)',
+                    'rgba(250, 237, 125, 0.5)',
+                    'rgba(250, 237, 125, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(250, 237, 125, 1.5)',
+                    'rgba(250, 237, 125, 1.5)',
+                    'rgba(250, 237, 125, 1.5)',
+                    'rgba(250, 237, 125, 1.5)'
+                ],
+                borderWidth: 1.5,
+                data: [thirdQuarter20,thirdQuarter21,thirdQuarter22,thirdQuarter23]
+            },
+            {
+                label: '4분기',
+                backgroundColor:[
+                    'rgba(134, 229, 127, 0.5)',
+                    'rgba(134, 229, 127, 0.5)',
+                    'rgba(134, 229, 127, 0.5)',
+                    'rgba(134, 229, 127, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(134, 229, 127, 1.5)',
+                    'rgba(134, 229, 127, 1.5)',
+                    'rgba(134, 229, 127, 1.5)',
+                    'rgba(134, 229, 127, 1.5)'
+                ],
+                borderWidth: 1.5,
+                data: [fourthQuarter20,fourthQuarter21,fourthQuarter22,fourthQuarter23]
+            }]
+        },
+        // Configuration options go here
+        options: {
+            title: {
+                display: true,
+                text: 'All Year&Qaurter review',
+                fontSize: 15,
+                fontColor: 'rgba(46, 49, 49, 1)'
+            },
+            legend: {
+                labels: {
+                    fontColor: 'rgba(83, 51, 237, 1)',
+                    fontSize: 15,
+                }
+            },
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        fontColor: 'rgba(27, 163, 156, 1)',
+                        fontSize: '15'
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        fontColor: 'rgba(246, 36, 89, 1)',
+                        fontSize: '15'
+                    }
+                }]
+            },
+            responsive:false,
+        }
+    });
+
 </script>
 
 </html>

@@ -2,6 +2,7 @@ from eunjeon import Mecab
 # from konlpy.tag import Mecab
 from textrank import KeysentenceSummarizer
 import pandas as pd
+import asyncio
 
 # mecab = Mecab(dicpath="C:/mecab/mecab-ko-dic")
 mecab = Mecab()
@@ -12,7 +13,7 @@ def Mecab_tokenizer(sent):
     
     return words
 
-def Processing_TextRank(df_one):
+async def Processing_TextRank(df_one):
 
 
     good_text=[]

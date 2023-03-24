@@ -44,7 +44,7 @@
       <h3>search products "{{ search }}"</h3>
       <div class="product-list">
         {% for data in search_list %}
-            <a href="http://127.0.0.1:5000/modal/{{ data['name'] }}" class="product" onclick="Loading()">
+            <a href="/modal/{{ data['name'] }}" class="product" onclick="Loading()">
                 <img src="{{ data['img'] }}" width="250">
                 <div class="product-name">
                     {{ data['name'] }}

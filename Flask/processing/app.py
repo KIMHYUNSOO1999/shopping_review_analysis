@@ -26,6 +26,9 @@ from module import bar # 바 차트
 from module import Recommended_Product # 제품 추천
 from module import mecab_wordcloud # MeCab워드클라우드
 from module import rank2 # textrank
+from module import year_quarter_cnt
+
+import asyncio
 
 tf.keras.optimizers.RectifiedAdam = RectifiedAdam
 
@@ -277,11 +280,12 @@ def result(): # search.py
                             search_list = search_list)
 
 # 메인 코드
-@app.route("/<pagename>/<name>")
-def page(pagename, name):
+@app.route("/modal/<name>")
+def page(name):
 
     product_name = name
-   
+    start = time.time()
+ 
     #링크 가져오기 1
     global value
     value = get_link.get_link(product_name)
@@ -304,7 +308,7 @@ def page(pagename, name):
     cate = etc_prod.split("/", 1)
    
     category = cate[0]
-    company = df_prod['company'][0]
+    # company = df_prod['company'][0]
 
     # 선택한 제품 가격을 정수로
     price_int = int(df_prod['price'][0].replace(',', ''))
@@ -316,7 +320,6 @@ def page(pagename, name):
 
     # 선택한 제품보다 +- 50000원 
     price_sort =  sug_df[ ( (sug_df['second_price'] >= price_int - 50000) & (sug_df['second_price'] <= price_int + 50000) ) ]
-    # price_sort_df = price_sort.sort_values(by='second_price')
     price_sort_df = price_sort.sort_index()
 
     # +- 50000원 인 제품 데이터프레임 딕셔너리로 변환
@@ -326,19 +329,19 @@ def page(pagename, name):
 
 
     # 텍스트 긍부정 라벨 
-    global good_text, bad_text, label_review
+    global good_text, bad_text, label_review, df_one, pos_per, neg_per, five_count, four_count, three_count, two_count, one_count, zero_count
     good_text, bad_text, pos_per, neg_per, label_review, five_count, four_count, three_count, two_count, one_count, zero_count, df_one = run_model.get_title_score2()
-    
+
+    #테스트
+    Processing_main()
+
     #워드클라우드
     # get_wordcloud.wordcloud()
 
-    mecab_wordcloud.Processing_Mecab()
+    # mecab_wordcloud.Processing_Mecab()
 
-
-    # df=pd.read_csv('danawa_label.csv', encoding='cp949') 
-    # df=df.dropna(axis=0)
-    global Top3_good, Top3_bad
-    Top3_good, Top3_bad = rank2.Processing_TextRank(df_one)
+    # global Top3_good, Top3_bad
+    # Top3_good, Top3_bad = rank2.Processing_TextRank(df_one)
 
     # 도넛 차트
     global donut_per
@@ -347,6 +350,8 @@ def page(pagename, name):
     # 바 차트
     global bar_cnt
     bar_cnt = bar.bar(five_count, four_count, three_count, two_count, one_count, zero_count)
+
+    print("소요 시간 : ", time.time() - start)
 
     return redirect(url_for('main'))
 
@@ -397,7 +402,52 @@ def main():
                             bar_count = bar_cnt,
                             donut_per = donut_per,
                             Positive_Top_3_review = Positive_Top_3_review,
-                            Negative_Top_3_review = Negative_Top_3_review)
+                            Negative_Top_3_review = Negative_Top_3_review,
+                            #2023
+                            firstQuarter_pos_cnt23 = firstQuarter_pos_cnt23,
+                            firstQuarter_neg_cnt23 = firstQuarter_neg_cnt23,
+                            secondQuarter_pos_cnt23 = secondQuarter_pos_cnt23,
+                            secondQuarter_neg_cnt23 = secondQuarter_neg_cnt23,
+                            thirdQuarter_pos_cnt23 = thirdQuarter_pos_cnt23,
+                            thirdQuarter_neg_cnt23 = thirdQuarter_neg_cnt23,
+                            fourthQuarter_pos_cnt23 = fourthQuarter_pos_cnt23,
+                            fourthQuarter_neg_cnt23 = fourthQuarter_neg_cnt23,
+                            # 2022
+                            firstQuarter_pos_cnt22 = firstQuarter_pos_cnt22,
+                            firstQuarter_neg_cnt22 = firstQuarter_neg_cnt22,
+                            secondQuarter_pos_cnt22 = secondQuarter_pos_cnt22,
+                            secondQuarter_neg_cnt22 = secondQuarter_neg_cnt22,
+                            thirdQuarter_pos_cnt22 = thirdQuarter_pos_cnt22,
+                            thirdQuarter_neg_cnt22 = thirdQuarter_neg_cnt22,
+                            fourthQuarter_pos_cnt22 = fourthQuarter_pos_cnt22,
+                            fourthQuarter_neg_cnt22 = fourthQuarter_neg_cnt22,
+                            #2021
+                            firstQuarter_pos_cnt21 = firstQuarter_pos_cnt21,
+                            firstQuarter_neg_cnt21 = firstQuarter_neg_cnt21,
+                            secondQuarter_pos_cnt21 = secondQuarter_pos_cnt21,
+                            secondQuarter_neg_cnt21 = secondQuarter_neg_cnt21,
+                            thirdQuarter_pos_cnt21 = thirdQuarter_pos_cnt21,
+                            thirdQuarter_neg_cnt21 = thirdQuarter_neg_cnt21,
+                            fourthQuarter_pos_cnt21 = fourthQuarter_pos_cnt21,
+                            fourthQuarter_neg_cnt21 = fourthQuarter_neg_cnt21,
+                            #2020
+                            firstQuarter_pos_cnt20 = firstQuarter_pos_cnt20,
+                            firstQuarter_neg_cnt20 = firstQuarter_neg_cnt20,
+                            secondQuarter_pos_cnt20 = secondQuarter_pos_cnt20,
+                            secondQuarter_neg_cnt20 = secondQuarter_neg_cnt20,
+                            thirdQuarter_pos_cnt20 = thirdQuarter_pos_cnt20,
+                            thirdQuarter_neg_cnt20 = thirdQuarter_neg_cnt20,
+                            fourthQuarter_pos_cnt20 = fourthQuarter_pos_cnt20,
+                            fourthQuarter_neg_cnt20 = fourthQuarter_neg_cnt20,
+                            # ~ 2019
+                            firstQuarter_pos_cnt_other = firstQuarter_pos_cnt_other,
+                            firstQuarter_neg_cnt_other = firstQuarter_neg_cnt_other,
+                            secondQuarter_pos_cnt_other = secondQuarter_pos_cnt_other,
+                            secondQuarter_neg_cnt_other = secondQuarter_neg_cnt_other,
+                            thirdQuarter_pos_cnt_other = thirdQuarter_pos_cnt_other,
+                            thirdQuarter_neg_cnt_other = thirdQuarter_neg_cnt_other,
+                            fourthQuarter_pos_cnt_other = fourthQuarter_pos_cnt_other,
+                            fourthQuarter_neg_cnt_other = fourthQuarter_neg_cnt_other,)
 
 # 전체 리뷰 페이지
 def get_users(offset=0, per_page=10): # 전체
@@ -405,14 +455,12 @@ def get_users(offset=0, per_page=10): # 전체
 
 @app.route('/review', methods=['GET', 'POST'])
 def review():
-
     page, per_page, offset = get_page_args(page_parameter='page',
                                            per_page_parameter='per_page')
     total = len(label_review)
     pagination_users = get_users(offset=offset, per_page=per_page)
     pagination = Pagination(page=page, per_page=per_page, total=total,
                             css_framework='bootstrap4')
-    
     
     return render_template('review.html', 
                             review = pagination_users,
@@ -587,6 +635,21 @@ def five():
                             pagination=pagination,
                             review_count = five_count)
 
+# 비동기
+def Processing_main():
+    asyncio.run(Processing_async())
+
+async def Processing_async():
+    await mecab_wordcloud.Processing_Mecab()
+    global Top3_good, Top3_bad
+    Top3_good, Top3_bad = await rank2.Processing_TextRank(df_one)
+    global firstQuarter_pos_cnt23, firstQuarter_neg_cnt23, secondQuarter_pos_cnt23, secondQuarter_neg_cnt23, thirdQuarter_pos_cnt23, thirdQuarter_neg_cnt23, fourthQuarter_pos_cnt23, fourthQuarter_neg_cnt23,firstQuarter_pos_cnt22, firstQuarter_neg_cnt22, secondQuarter_pos_cnt22, secondQuarter_neg_cnt22, thirdQuarter_pos_cnt22, thirdQuarter_neg_cnt22, fourthQuarter_pos_cnt22, fourthQuarter_neg_cnt22,firstQuarter_pos_cnt21, firstQuarter_neg_cnt21, secondQuarter_pos_cnt21, secondQuarter_neg_cnt21, thirdQuarter_pos_cnt21, thirdQuarter_neg_cnt21, fourthQuarter_pos_cnt21, fourthQuarter_neg_cnt21,firstQuarter_pos_cnt20, firstQuarter_neg_cnt20, secondQuarter_pos_cnt20, secondQuarter_neg_cnt20, thirdQuarter_pos_cnt20, thirdQuarter_neg_cnt20, fourthQuarter_pos_cnt20, fourthQuarter_neg_cnt20,firstQuarter_pos_cnt_other, firstQuarter_neg_cnt_other, secondQuarter_pos_cnt_other, secondQuarter_neg_cnt_other, thirdQuarter_pos_cnt_other, thirdQuarter_neg_cnt_other, fourthQuarter_pos_cnt_other, fourthQuarter_neg_cnt_other
+
+    (firstQuarter_pos_cnt23, firstQuarter_neg_cnt23, secondQuarter_pos_cnt23, secondQuarter_neg_cnt23, thirdQuarter_pos_cnt23, thirdQuarter_neg_cnt23, fourthQuarter_pos_cnt23, fourthQuarter_neg_cnt23,
+    firstQuarter_pos_cnt22, firstQuarter_neg_cnt22, secondQuarter_pos_cnt22, secondQuarter_neg_cnt22, thirdQuarter_pos_cnt22, thirdQuarter_neg_cnt22, fourthQuarter_pos_cnt22, fourthQuarter_neg_cnt22,
+    firstQuarter_pos_cnt21, firstQuarter_neg_cnt21, secondQuarter_pos_cnt21, secondQuarter_neg_cnt21, thirdQuarter_pos_cnt21, thirdQuarter_neg_cnt21, fourthQuarter_pos_cnt21, fourthQuarter_neg_cnt21,
+    firstQuarter_pos_cnt20, firstQuarter_neg_cnt20, secondQuarter_pos_cnt20, secondQuarter_neg_cnt20, thirdQuarter_pos_cnt20, thirdQuarter_neg_cnt20, fourthQuarter_pos_cnt20, fourthQuarter_neg_cnt20,
+    firstQuarter_pos_cnt_other, firstQuarter_neg_cnt_other, secondQuarter_pos_cnt_other, secondQuarter_neg_cnt_other, thirdQuarter_pos_cnt_other, thirdQuarter_neg_cnt_other, fourthQuarter_pos_cnt_other, fourthQuarter_neg_cnt_other) = await year_quarter_cnt.year_quarter_cnt()
 
 
 if __name__ == '__main__':

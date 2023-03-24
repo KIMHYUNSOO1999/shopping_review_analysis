@@ -27,8 +27,8 @@ def Crawl(value):
     pos_review_list = []
     neg_review_list = []
        
-    for i in tqdm(range(1,review_page+1)):
-    # for i in tqdm(range(1,21)):
+    # for i in tqdm(range(1,review_page+1)):
+    for i in tqdm(range(1,21)):
         url2 = "https://prod.danawa.com/info/dpg/ajax/companyProductReview.ajax.php?t=0.24477360207876253&prodCode=" + prodCode + "&cate1Code=861&page=" + str(i)
         headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36'}
         res = requests.get(url2, headers=headers)
