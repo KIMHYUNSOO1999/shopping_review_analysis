@@ -291,7 +291,7 @@ body {
   margin-right: 100px;
   display: inline-block;
   position: relative;
-  top: 5px;
+  bottom: 6px;
 }
 
 .wordcloud_img{
@@ -544,7 +544,6 @@ body {
   display: inline-block;
   position: relative;
   top: 30px;
-  
 }
 .chart2{
   width: 500px;
@@ -552,6 +551,27 @@ body {
   border: 3px solid #F2F2E2;
   border-radius: 10px;
   margin-top: 20px;
+  margin-right: 100px;
+  display: inline-block;
+  position: relative;
+}
+.chart3{
+  width: 500px;
+  height: 460px;
+  border: 3px solid #F2F2E2;
+  border-radius: 10px;
+  margin-top: 60px;
+  margin-left: 100px;
+  margin-right: 50px;
+  display: inline-block;
+  position: relative;
+}
+.chart4{
+  width: 500px;
+  height: 460px;
+  border: 3px solid #F2F2E2;
+  border-radius: 10px;
+  margin-top: 60px;
   margin-right: 100px;
   display: inline-block;
   position: relative;
@@ -695,4 +715,56 @@ body {
   width: 90%;
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+.year{
+  width: 100px;
+  height: 35px;
+  border: 1px solid #C4C4C4;
+  /* box-sizing: border-box; */
+  border-radius: 10px;
+  padding-left: 10px;
+  font-size: 15px;
+  line-height: 16px;
+  float: left;
+  position: absolute;
+  right: 76%;
+  top: 2%;
+}
+
+.year:focus{
+  border: 1px solid #9d83b6;
+  border-radius: 10px;
+  outline: 3px solid #F8E4FF;
+}
+
+.year2{
+  width: 100px;
+  height: 35px;
+  border: 1px solid #C4C4C4;
+  /* box-sizing: border-box; */
+  border-radius: 10px;
+  padding-left: 5px;
+  font-size: 15px;
+  line-height: 16px;
+  float: left;
+  position: absolute;
+  right: 76%;
+  top: 2%;
+}
+
+.year2:focus{
+  border: 1px solid #9d83b6;
+  border-radius: 10px;
+  outline: 3px solid #F8E4FF;
+}
+
+#year-quarter-posnegreview-count{
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+#year-quarter-review-count{
+  margin-left: 10px;
+  margin-top: 5px;
 }
