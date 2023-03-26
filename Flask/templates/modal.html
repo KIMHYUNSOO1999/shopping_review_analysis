@@ -102,7 +102,13 @@
           <div class="pos-info" title=" 유사도 스코어 : {{ data['score'] }}">
             <span class="grade">Top {{ data['grade'] }}</span>
           </div>
-          <div class="first_review">{{ data['review'] }}</div>
+          <div>
+            <div class="first_review" title="{{ data['review'] }}">
+              {{ data['review'] }}
+            </div>
+            <a class="more-review2"><span>▶</span>더보기</a>
+            <a class="hide-review2"><span>▲</span>접기</a>
+          </div>
         {% endfor %}
       </fieldset>
     
@@ -118,7 +124,13 @@
             <div class="neg-info" title=" 유사도 스코어 : {{ data['score'] }}">
               <span class="grade">Top {{ data['grade'] }}</span>
             </div>
-            <div class="first_review">{{ data['review'] }}</div>
+            <div>
+              <div class="first_review" title="{{ data['review'] }}">
+                {{ data['review'] }}
+              </div>
+              <a class="more-review2"><span>▶</span>더보기</a>
+              <a class="hide-review2"><span>▲</span>접기</a>
+            </div>
           {% endfor %}
         </fieldset>
 
@@ -394,6 +406,17 @@
     $(this).hide();
     $(this).siblings(".text").css({'-webkit-line-clamp':'3'});
   })
+
+  $(".more-review2").click(function(){
+      $(this).hide();
+      $(this).siblings(".hide-review2").show();
+      $(this).siblings(".first_review").css({'-webkit-line-clamp':'50'});
+    })
+    $(".hide-review2").click(function(){
+      $(this).siblings(".more-review2").show();
+      $(this).hide();
+      $(this).siblings(".first_review").css({'-webkit-line-clamp':'2'});
+    })
   // 바 차트
   var ctx = document.getElementById('bar_chart').getContext('2d');
   var zero = '{{ bar_count.zero }}';
