@@ -266,16 +266,16 @@ async def Processing_Mecab(df):
 
     good_list=[] 
     bad_list=[] 
-
+    stopwords = ['이', '있', '하', '것', '들', '그', '되', '수', '이', '보', '않', '없', '나', '사람', '주', '아니', '등', '같', '우리', '때', '년', '가', '한', '지', '대하', '오', '말', '일', '그렇', '위하','거','듯','데']
     for sentence in good_morphs : 
         for word, tag in sentence : 
-            if tag in ['NNP',"NNG","NA","VA","NNB","VA","MM","IC","MA","VCP"] and ("것" not in word) and ("내" not in word)and ("나" not in word)and ("수"not in word) and("게"not in word)and("말"not in word)and("좋"not in word):
-                good_list.append(word)
+            if tag in ['NNP',"NNG","NA","VA","NNB","VA","MM","IC","MA","VCP"] and (word not in stopwords) and len(word)>1:
+                    good_list.append(word)
 
     for sentence in bad_morphs : 
         for word, tag in sentence : 
-            if tag in ['NNP',"NNG","NA","VA","NNB","VA","MM","IC","MA","VCN"] and ("것" not in word) and ("내" not in word)and ("나" not in word)and ("수"not in word) and("게"not in word)and("말"not in word)and("좋"not in word):
-                bad_list.append(word)
+            if tag in ['NNP',"NNG","NA","VA","NNB","VA","MM","IC","MA","VCN"] and (word not in stopwords) and len(word)>1:
+                    bad_list.append(word)
         
     good_count = Counter(good_list)
     good_word = dict(good_count.most_common())
