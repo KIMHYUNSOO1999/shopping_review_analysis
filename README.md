@@ -10,17 +10,16 @@
 기존 쇼핑몰은 별점과 리뷰로 구성되어 있으나, 별점과 리뷰가 일치하지않음을 확인 할 수 있었다. 이에 리뷰로 감정분석하여, 분석 한 데이터를 시각화한다.
 
 ## 시스템 구성도
-
 ![image](https://user-images.githubusercontent.com/93048764/229277589-2132be6a-8b30-4808-b199-b1ed66043ca6.png)
 
 ● Programming language  : Python</p></p>
 ● Front-end : HTML, CSS, JavaScript</p></p>
 ● Web server : Flask</p></p>
 ● Tokenizer : Mecab</p></p>
-● Database : mySQL</p>
+● Database : MySQL</p>
 
 ## 시연 영상
-![제품검색](https://user-images.githubusercontent.com/93048764/229277626-e8eb8abd-7b65-4ae2-85a5-8307d9dbb3ff.gif)
+![KakaoTalk_20230403_110658322](https://user-images.githubusercontent.com/93048764/229395730-e011d2b9-6aab-40f7-83e1-074545d40a83.gif)
 
 
 ## 사용 데이터
