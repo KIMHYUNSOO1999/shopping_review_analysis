@@ -19,7 +19,7 @@ matplotlib.rc('axes',unicode_minus = False)
 mecab = Mecab()
 
 def wordcloud_png(df):
-    df=pd.read_csv('/content/danawa2_label.csv',encoding='CP949')
+    df=pd.read_csv('C:/Users/KHS/Desktop/대학교/토이 프로젝트/shopping_review_analysis/Analysis/Csv/danawa2_label.csv',encoding='CP949')
     
     good_text=[]
     bad_text=[]

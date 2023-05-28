@@ -147,10 +147,6 @@ def exam():
     df = df[df['review'].str.strip().astype(bool)]
     df = df.reset_index(drop=True)
     
-
-    df['review'].nunique()
-    df.drop_duplicates(subset=['review'], inplace=True)
-    
     data_list=[]
     
     for i in df['review']:
