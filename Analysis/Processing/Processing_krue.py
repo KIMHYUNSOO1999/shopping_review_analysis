@@ -53,9 +53,22 @@ def get_title_score2():
 
     df = pd.read_csv(BASE_DIR/'Processing/danawa2.csv')
       
-    df['review'] = df['review'].str.replace("[^ㄱ-ㅎㅏ-ㅣ가-힣 ]","")
-    df['review'].nunique()
-    df.drop_duplicates(subset=['review'], inplace=True)
+    stop_word=set()
+    with open("C:/Users/KHS/Desktop/stop_word.txt", "r",encoding="UTF-8") as f:
+        for line in f:
+            stop_word.add(line.strip())
+            
+    for word in stop_word:
+        df['review'] = df['review'].str.replace(word," ")
+            
+    df['review'] = df['review'].str.replace(r"[a-zA-Z]"," ")
+    df['review'] = df['review'].str.replace(r"[^가-힣]"," ")
+    df['review'] = df['review'].str.replace(r"\s+"," ")
+    df['review'] = df['review'].str.strip()
+    
+    df = df[df['review'].str.strip().astype(bool)]
+    df = df.reset_index(drop=True)
+    
 
     X_data = df['review']
     MAX_SEQ_LEN = 80

@@ -79,12 +79,10 @@ def Processing_classification(df):
     df['review'] = df['review'].str.replace(r"\s+"," ")
     df['review'] = df['review'].str.strip()
     
-    df['text_temp']=df['review']
+    df = df[df['review'].str.strip().astype(bool)]
+    df = df.reset_index(drop=True)
     
-    df['text_temp'].nunique()
-    df.drop_duplicates(subset=['review'], inplace=True)
-
-    X_data = df['text_temp']
+    X_data = df['review']
     MAX_SEQ_LEN = 80
     tokenizer = BertTokenizer.from_pretrained('klue/bert-base')
 
