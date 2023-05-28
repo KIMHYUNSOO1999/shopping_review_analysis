@@ -66,25 +66,23 @@ def Processing_classification(df):
     import warnings
     warnings.filterwarnings('ignore')
     
-    
-    stop_word=[]
-    
+    stop_word=set()
     with open("C:/Users/KHS/Desktop/stop_word.txt", "r",encoding="UTF-8") as f:
         for line in f:
-            stop_word.append(line.strip())
+            stop_word.add(line.strip())
             
     for word in stop_word:
-        for i in range(len(df)):  
-            if word in df.loc[i,'1']:
-                df.loc[i,'review']= df.loc[i,'review'].replace(word, " ")
+        df['review'] = df['review'].str.replace(word," ")
             
     df['review'] = df['review'].str.replace(r"[a-zA-Z]"," ")
     df['review'] = df['review'].str.replace(r"[^가-힣]"," ")
     df['review'] = df['review'].str.replace(r"\s+"," ")
+    df['review'] = df['review'].str.strip()
     
     df['text_temp']=df['review']
+    
     df['text_temp'].nunique()
-    df.drop_duplicates(subset=['text_temp'], inplace=True)
+    df.drop_duplicates(subset=['review'], inplace=True)
 
     X_data = df['text_temp']
     MAX_SEQ_LEN = 80
