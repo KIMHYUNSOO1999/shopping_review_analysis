@@ -16,6 +16,8 @@ from konlpy.tag import Okt,Mecab
 from textrank import KeysentenceSummarizer
 import ayncio
 import warnings
+import re
+
 warnings.filterwarnings('ignore')
 
 okt = Okt()
@@ -63,8 +65,24 @@ def Processing_classification(df):
 
     import warnings
     warnings.filterwarnings('ignore')
-
-    df['text_temp'] = df['review'].str.replace("[^ㄱ-ㅎㅏ-ㅣ가-힣 ]","")
+    
+    
+    stop_word=[]
+    
+    with open("C:/Users/KHS/Desktop/stop_word.txt", "r",encoding="UTF-8") as f:
+        for line in f:
+            stop_word.append(line.strip())
+            
+    for word in stop_word:
+        for i in range(len(df)):  
+            if word in df.loc[i,'1']:
+                df.loc[i,'review']= df.loc[i,'review'].replace(word, " ")
+            
+    df['review'] = df['review'].str.replace(r"[a-zA-Z]"," ")
+    df['review'] = df['review'].str.replace(r"[^가-힣]"," ")
+    df['review'] = df['review'].str.replace(r"\s+"," ")
+    
+    df['text_temp']=df['review']
     df['text_temp'].nunique()
     df.drop_duplicates(subset=['text_temp'], inplace=True)
 
@@ -231,21 +249,6 @@ async def Processing_Mecab(df):
         else:
             bad_text.append(df.loc[i,'text'])
 
-
-    for i in good_text:
-
-        i=i.strip()
-
-        if '\r\n\r\n' in i:
-            good_text[good_text.index(i)]=i.replace('\r\n\r\n','')
-
-    for i in bad_text:
-
-        i=i.strip()
-
-        if '\r\n\r\n' in i:
-            bad_text[bad_text.index(i)]=i.replace('\r\n\r\n','')
-
     good_text = [x for x in good_text if pd.isnull(x) == False]
     bad_text = [x for x in bad_text if pd.isnull(x) == False]
 
@@ -343,19 +346,6 @@ async def Processing_TextRank(df):
         else:
             bad_text.append(df.loc[i,'text'])
 
-    for i in good_text:
-
-        i=i.strip()
-
-        if '\r\n\r\n' in i:
-            good_text[good_text.index(i)]=i.replace('\r\n\r\n','')
-
-    for i in bad_text:
-
-        i=i.strip()
-
-        if '\r\n\r\n' in i:
-            bad_text[bad_text.index(i)]=i.replace('\r\n\r\n','')
 
     summarizer = KeysentenceSummarizer(tokenize = Mecab_tokenizer, min_sim = 0.6)
     keysents_good = summarizer.summarize(good_text, topk=3)
