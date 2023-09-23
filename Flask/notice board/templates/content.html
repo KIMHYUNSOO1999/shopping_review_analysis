@@ -1,0 +1,85 @@
+<!-- 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ list.title }}</title>
+</head>
+<body>
+
+	<h1>{{ list.title }}</h1>
+    <h5>{{ list.user_nickname }}, {{ list.wdate}}</h5>
+    <p>{{ list.content }}</p>
+    
+	<div >
+		<form action="{{ url_for('edit_post', title=list.title) }}"><input type="submit" value="수정하기"> </form>
+		<form method="POST" action="{{ url_for('delete_post', title=list.title) }}">
+			<input type="submit" value="삭제하기">
+		  </form>
+		</form>
+		<a href="/post">목록으로</a>
+	</div>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ list.title }}</title>
+</head>
+<body>
+    <h1>{{ list.title }}</h1>
+    
+    <!-- 댓글 입력 폼 -->
+    <form method="POST" action="/comment/{{ list.title }}">
+        <input type="text" name="comment">
+        <input type="submit" value="댓글 달기">
+    </form>
+
+    <!-- 댓글 목록 -->
+    <ul>
+        {% for comment in comments %}
+        <li>{{ comment }}</li>
+        {% endfor %}
+    </ul>
+
+    <div>
+        <form action="{{ url_for('edit_post', title=list.title) }}"><input type="submit" value="수정하기"></form>
+        <form method="POST" action="{{ url_for('delete_post', title=list.title) }}">
+            <input type="submit" value="삭제하기">
+        </form>
+        <a href="/post">목록으로</a>
+    </div>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ list.title }}</title>
+</head>
+<body>
+    <h1>{{ list.title }}</h1>
+    
+    <!-- 댓글 입력 폼 -->
+    <form method="POST" action="/comment/{{ list.title }}">
+        <input type="text" name="comment">
+        <input type="submit" value="댓글 달기">
+    </form>
+
+    <!-- 댓글 목록 -->
+    <ul>
+        {% for comment in comments %}
+        <li>{{ comment.content }}</li>
+        {% endfor %}
+    </ul>
+
+    <div>
+        <form action="{{ url_for('edit_post', title=list.title) }}"><input type="submit" value="수정하기"></form>
+        <form method="POST" action="{{ url_for('delete_post', title=list.title) }}">
+            <input type="submit" value="삭제하기">
+        </form>
+        <a href="/post">목록으로</a>
+    </div>
+</body>
+</html>
