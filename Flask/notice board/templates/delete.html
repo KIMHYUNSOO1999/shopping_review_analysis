@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Post</title>
+</head>
+<body>
+    <h1>Delete Post: {{ list.title }}</h1>
+    <form method="POST" action="{{ url_for('delete_post', title=list.title) }}">
+        <p>Are you sure you want to delete this post?</p>
+        <input type="submit" value="Delete">
+    </form>
+</body>
+</html>

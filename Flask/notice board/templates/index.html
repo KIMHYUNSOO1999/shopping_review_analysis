@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maxinum-scale=1, user-scalable=no">
+		<!-- <link rel="stylesheet"> -->
+		
+		<title>게시판</title>
+	</head>
+    <body>	
+		<div class="view" >
+			<div class="row h-100">
+				<div class="col-sm-12 my-auto white-text text-center">
+					<div class="container">
+					{% if logininfo %}
+					<h5 styl>Welcome <strong>{{logininfo}}.</strong></h5>
+					{% endif %}
+					<hr style>
+						<a class="display-2 text-white font-weight-bold"
+						style>게시판</a>
+					<!--<a class="text-center"><strong><font color="white" size=7>FLASK TEST PAGE</font></strong></a>-->
+					<hr style>
+					{% if logininfo %}
+					<a href="/post" ><strong>board&nbsp;</strong></a> 
+					<a href="/logout" ><strong>LOGOUT</strong></a>
+					{% else %}   
+					<a href="/login" ><strong>SIGN IN&nbsp;</strong></a> 
+					<a href="/signup"><strong>SIGN UP</strong></a>
+					{% endif %}
+				</div>
+				</div>
+			</div>
+    </body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shopping_cart - Login</title>
+</head>
+<body>
+  <div class="login-background">
+    <div class="login-form">
+      <h3 class="login-title">회원가입</h3>
+      <form action="/signup" method="post">
+        <input type="text" name="user_id" class="text-field" placeholder="아이디" autofocus required>
+        <input type="password" name="user_password" class="text-field2" placeholder="비밀번호 (8 ~ 15자)"  oninvalid="alert('비밀번호는 8자 이상 입력해주세요.')"  minlength="8"  maxlength="15" required>
+        <input type="email" name="email" class="text-field2" placeholder="이메일" required>
+        <input type="text" name="user_nickname" class="text-field2" placeholder="닉네임" required>
+        <input type="submit" value="회원가입" class="submit-btn">
+      </form>
+  
+      <div class="links">
+        <a class="links1">계정이 있으신가요?</a>
+        <a href="/login" class="links2">Sign in</a>
+        <a href="/" class="links3">Home</a>
+      </div>
+    </div>
+  </div>
+
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <script type="text/javascript">
+      alert("{{ messages[-1] }}")
+    </script>
+    {% endif %}
+  {% endwith %}
+
+
+  <br>
+  
+</body>
+</html>
